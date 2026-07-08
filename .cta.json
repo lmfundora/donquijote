@@ -1,0 +1,24 @@
+{
+  "projectName": "donquijote",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "pnpm",
+  "includeExamples": true,
+  "tailwind": true,
+  "addOnOptions": {},
+  "envVarValues": {
+    "VITE_CONVEX_URL": "dfsdf"
+  },
+  "git": true,
+  "install": true,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "nitro",
+    "convex",
+    "form",
+    "shadcn",
+    "better-auth"
+  ]
+}
