@@ -5,15 +5,16 @@ export const Route = createFileRoute("/")({ component: App });
 
 function App() {
   const [scrolled, setScrolled] = useState(false);
-  const [transitioning, setTransitioning] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionComplete, setTransitionComplete] = useState(false);
   const [targetPosition, setTargetPosition] = useState({ top: 0, left: 0 });
   const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      if (scrollY > 280 && !scrolled) {
-        // Calculate target position
+      if (scrollY > 0 && !scrolled && !isTransitioning) {
+        // Calculate target position from div
         if (divRef.current) {
           const rect = divRef.current.getBoundingClientRect();
           setTargetPosition({
@@ -21,16 +22,25 @@ function App() {
             left: rect.left + rect.width / 2,
           });
         }
+        setIsTransitioning(true);
         setScrolled(true);
-        setTransitioning(true);
-        setTimeout(() => setTransitioning(false), 700);
-      } else if (scrollY <= 280 && scrolled) {
+        // Prevent scroll during transition
+        document.body.style.overflow = "hidden";
+        window.scrollTo(0, 0);
+
+        setTimeout(() => {
+          setIsTransitioning(false);
+          setTransitionComplete(true);
+          document.body.style.overflow = "";
+        }, 700);
+      } else if (scrollY <= 0 && scrolled && !isTransitioning) {
         setScrolled(false);
+        setTransitionComplete(false);
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrolled]);
+  }, [scrolled, isTransitioning]);
 
   const links = [
     {
@@ -76,11 +86,11 @@ function App() {
         ))}
       </nav>
 
-      {/* Hero Text - Fixed initially, then transitions to div position */}
+      {/* Hero Text - Transitions to div position on scroll */}
       <h1
-        className={`fixed z-20 font-italianno  transition-all duration-700 ease-out ${
-          scrolled ? "text-primary text-7xl z-35" : " text-9xl text-white"
-        }`}
+        className={`fixed z-35 font-italianno transition-all duration-700 ease-out ${
+          scrolled ? "text-7xl text-text-dark" : "text-9xl text-white"
+        } ${transitionComplete ? "opacity-0 pointer-events-none" : ""}`}
         style={{
           left: scrolled ? `${targetPosition.left}px` : "140px",
           top: "40%",
@@ -93,12 +103,14 @@ function App() {
       {/* Spacer for initial scroll - allows image to be visible first */}
       <div className="h-screen" />
 
-      {/* White Left Panel - Normal flow, scrolls with content */}
+      {/* White Left Panel - Slides up from below when scrolled */}
       <div
         ref={divRef}
-        className="{`absolute z-30 w-1/2 h-screen bg-background flex items-center justify-center   transition-all duration-700 ease-out ${
-        scrolled ? 'translate-y-100' : ''
-        }`}"
+        className={`z-30 w-1/2 bg-amber-200 h-screen flex items-center justify-center transition-transform duration-700 ease-out ${
+          scrolled
+            ? "absolute top-0 left-0 translate-y-0"
+            : "translate-y-full absolute bottom-0 left-0"
+        }`}
       >
         <h1
           className={`font-italianno text-7xl text-text-dark transition-opacity duration-700 ${
