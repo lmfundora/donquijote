@@ -7,16 +7,18 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionComplete, setTransitionComplete] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
   const [targetPosition, setTargetPosition] = useState({ top: 0, left: 0 });
   const divRef = useRef<HTMLDivElement>(null);
+  const h1Ref = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      if (scrollY > 0 && !scrolled && !isTransitioning) {
-        // Calculate target position from div
-        if (divRef.current) {
-          const rect = divRef.current.getBoundingClientRect();
+      if (scrollY > 0 && !scrolled && !isTransitioning && !isExiting) {
+        // Calculate target position from h1 inside div
+        if (h1Ref.current) {
+          const rect = h1Ref.current.getBoundingClientRect();
           setTargetPosition({
             top: rect.top + rect.height / 2,
             left: rect.left + rect.width / 2,
@@ -33,14 +35,22 @@ function App() {
           setTransitionComplete(true);
           document.body.style.overflow = "";
         }, 700);
-      } else if (scrollY <= 0 && scrolled && !isTransitioning) {
-        setScrolled(false);
-        setTransitionComplete(false);
+      } else if (scrollY <= 0 && scrolled && !isTransitioning && !isExiting) {
+        setIsExiting(true);
+        // Prevent scroll during exit transition
+        document.body.style.overflow = "hidden";
+
+        setTimeout(() => {
+          setScrolled(false);
+          setTransitionComplete(false);
+          setIsExiting(false);
+          document.body.style.overflow = "";
+        }, 700);
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrolled, isTransitioning]);
+  }, [scrolled, isTransitioning, isExiting]);
 
   const links = [
     {
@@ -88,14 +98,9 @@ function App() {
 
       {/* Hero Text - Transitions to div position on scroll */}
       <h1
-        className={`fixed z-35 font-italianno transition-all duration-700 ease-out ${
+        className={`top-[40%] left-[15%] fixed z-35 font-italianno transition-all duration-700 ease-out ${
           scrolled ? "text-7xl text-text-dark" : "text-9xl text-white"
         } ${transitionComplete ? "opacity-0 pointer-events-none" : ""}`}
-        style={{
-          left: scrolled ? `${targetPosition.left}px` : "140px",
-          top: "40%",
-          transform: scrolled ? "translate(-50%, -50%)" : "none",
-        }}
       >
         Don Quijote
       </h1>
@@ -106,19 +111,20 @@ function App() {
       {/* White Left Panel - Slides up from below when scrolled */}
       <div
         ref={divRef}
-        className={`z-30 w-1/2 bg-amber-200 h-screen flex items-center justify-center transition-transform duration-700 ease-out ${
-          scrolled
-            ? "absolute top-0 left-0 translate-y-0"
-            : "translate-y-full absolute bottom-0 left-0"
+        className={`z-30 w-1/2 bg-background h-screen absolute top-0 left-0 transition-transform duration-700 ease-out ${
+          isExiting || !scrolled ? "translate-y-full" : "translate-y-0"
         }`}
       >
-        <h1
-          className={`font-italianno text-7xl text-text-dark transition-opacity duration-700 ${
-            scrolled ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          Don Quijote
-        </h1>
+        <div className="relative w-full h-full">
+          <h1
+            ref={h1Ref}
+            className={`absolute top-[40%] left-[30%] font-italianno text-7xl text-text-dark transition-opacity duration-700 ${
+              scrolled ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Don Quijote
+          </h1>
+        </div>
       </div>
 
       {/* Content below hero - for scrolling */}
