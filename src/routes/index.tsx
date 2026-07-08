@@ -53,14 +53,16 @@ function App() {
   return (
     <main className="relative w-full">
       {/* Background Image - Fixed */}
-      <img
-        src="/Gemini_Generated_Image_wzsglbwzsglbwzsg.png"
-        alt="Fondo"
-        className="fixed inset-0 w-full h-full object-cover scale-125 translate-x-25"
-      />
+      <div className="w-screen h-screen overflow-hidden">
+        <img
+          src="/Gemini_Generated_Image_wzsglbwzsglbwzsg.png"
+          alt="Fondo"
+          className="w-full h-full object-cover scale-125 translate-x-25"
+        />
+      </div>
 
       {/* Vignette Overlay - Fixed */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.4)_40%,rgba(0,0,0,0.7)_70%,rgba(0,0,0,0.9)_100%)]" />
+      <div className="vinetta w-screen h-screen" />
 
       {/* Navigation - Fixed */}
       <nav className="absolute top-0 left-0 right-0 tracking-widest flex justify-between px-10 py-8 z-20 font-sans">
@@ -76,14 +78,13 @@ function App() {
 
       {/* Hero Text - Fixed initially, then transitions to div position */}
       <h1
-        className={`fixed z-20 font-italianno text-9xl text-white transition-all duration-700 ease-out ${
-          scrolled ? "text-7xl text-text-dark" : ""
+        className={`fixed z-20 font-italianno  transition-all duration-700 ease-out ${
+          scrolled ? "text-primary text-7xl z-35" : " text-9xl text-white"
         }`}
         style={{
           left: scrolled ? `${targetPosition.left}px` : "140px",
-          top: scrolled ? `${targetPosition.top}px` : "40%",
+          top: "40%",
           transform: scrolled ? "translate(-50%, -50%)" : "none",
-          opacity: transitioning ? 0 : 1,
         }}
       >
         Don Quijote
@@ -93,7 +94,12 @@ function App() {
       <div className="h-screen" />
 
       {/* White Left Panel - Normal flow, scrolls with content */}
-      <div ref={divRef} className="relative z-30 w-1/2 h-screen bg-background flex items-center justify-center">
+      <div
+        ref={divRef}
+        className="{`absolute z-30 w-1/2 h-screen bg-background flex items-center justify-center   transition-all duration-700 ease-out ${
+        scrolled ? 'translate-y-100' : ''
+        }`}"
+      >
         <h1
           className={`font-italianno text-7xl text-text-dark transition-opacity duration-700 ${
             scrolled ? "opacity-100" : "opacity-0"
