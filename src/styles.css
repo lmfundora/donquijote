@@ -189,3 +189,78 @@
         )
         /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
 }
+
+/* Scroll-driven animations using CSS transitions */
+.hero-title {
+    font-size: 4rem;
+    color: white;
+    top: 40%;
+    left: 15%;
+    transition: all 0.7s ease-out;
+}
+
+@media (min-width: 768px) {
+    .hero-title {
+        font-size: 8rem;
+        color: white;
+        top: 40%;
+        left: 15%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-title {
+        font-size: 9rem;
+        color: white;
+        top: 40%;
+        left: 15%;
+    }
+}
+
+.white-panel {
+    transform: translateY(100%);
+    transition: transform 0.7s ease-out;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .white-panel {
+        width: 75%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .white-panel {
+        width: 50%;
+    }
+}
+
+/* Scrolled state */
+body.scrolled .hero-title {
+    font-size: 4rem;
+    color: var(--text-dark);
+    top: 25%;
+    left: 24%;
+}
+
+@media (min-width: 768px) {
+    body.scrolled .hero-title {
+        font-size: 5rem;
+        color: var(--text-dark);
+        top: 25%;
+        left: 15%;
+    }
+}
+
+@media (min-width: 1024px) {
+    body.scrolled .hero-title {
+        font-size: 5rem;
+        color: var(--text-dark);
+        top: 25%;
+        left: 15%;
+    }
+}
+
+body.scrolled .white-panel {
+    transform: translateY(0);
+}

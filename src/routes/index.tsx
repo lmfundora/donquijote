@@ -5,42 +5,20 @@ import { useEffect, useState } from "react";
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {
-  const [scrolled, setScrolled] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Minimal scroll handler for CSS transitions - no scroll blocking
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      if (scrollY > 0 && !scrolled && !isTransitioning && !isExiting) {
-        setIsTransitioning(true);
-        setScrolled(true);
-        // Prevent scroll during transition
-        document.body.style.overflow = "hidden";
-        window.scrollTo(0, 0);
-
-        setTimeout(() => {
-          setIsTransitioning(false);
-          document.body.style.overflow = "";
-        }, 700);
-      } else if (scrollY <= 0 && scrolled && !isTransitioning && !isExiting) {
-        setIsExiting(true);
-        setScrolled(false);
-        setIsTransitioning(true);
-        // Prevent scroll during exit transition
-        document.body.style.overflow = "hidden";
-
-        setTimeout(() => {
-          setIsExiting(false);
-          setIsTransitioning(false);
-          document.body.style.overflow = "";
-        }, 700);
+      if (window.scrollY > 0) {
+        document.body.classList.add("scrolled");
+      } else {
+        document.body.classList.remove("scrolled");
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrolled, isTransitioning, isExiting]);
+  }, []);
 
   const links = [
     {
@@ -70,16 +48,8 @@ function App() {
           className="w-full h-full object-cover scale-125 md:scale-115 lg:scale-125 md:translate-x-10 lg:translate-x-25"
         />
 
-        {/* Hero Text - Transitions to div position on scroll */}
-        <h1
-          className={`absolute z-35 font-italianno transition-all duration-700 ease-out ${
-            scrolled
-              ? "text-4xl md:text-6xl lg:text-6xl text-text-dark top-[25%] left-[30%] md:left-[20%] lg:left-[15%] "
-              : "text-6xl md:text-8xl lg:text-9xl text-white top-[40%] left-[15%] "
-          }`}
-        >
-          Don Quijote
-        </h1>
+        {/* Hero Text - Scroll-driven animation */}
+        <h1 className="hero-title absolute z-35 font-italianno">Don Quijote</h1>
       </div>
 
       {/* Vignette Overlay - Fixed */}
@@ -90,7 +60,7 @@ function App() {
         {/* Mobile hamburger */}
         <button
           type="button"
-          className={`md:hidden  z-50 flex flex-col gap-1.5 p-1 ${scrolled ? "text-text-dark" : "text-text-dark"}`}
+          className="md:hidden z-50 flex flex-col gap-1.5 p-1 text-text-dark"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -139,14 +109,10 @@ function App() {
         </div>
       </nav>
 
-      {/* White Left Panel - Slides up from below when scrolled */}
-      <div
-        className={`z-30 w-full md:w-3/4 lg:w-1/2 bg-background h-screen absolute top-0 left-0 transition-transform duration-700 ease-out ${
-          isExiting || !scrolled ? "translate-y-full" : "translate-y-0"
-        }`}
-      >
+      {/* White Left Panel - Scroll-driven animation */}
+      <div className="white-panel z-30 w-full bg-background h-screen absolute top-0 left-0">
         <div className="w-full h-full relative">
-          <p className="absolute top-[40%]  left-[21%]  md:left-[22%] lg:left-[27%] w-52 md:w-64 lg:w-60 text-center font-sans tracking-widest text-sm/6 md:text-lg/10 lg:text-base/14">
+          <p className="absolute top-[40%]  left-[25%]  md:left-[22%] lg:left-[32%] w-52 md:w-64 lg:w-60 text-center font-sans tracking-widest text-sm/6 md:text-lg/10 lg:text-base/14">
             Donde el lujo, cultura y tradición se filtran en cada
             experiencia{" "}
           </p>
