@@ -8,6 +8,7 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,21 +61,21 @@ function App() {
     },
   ];
   return (
-    <main className="relative w-full">
+    <main className="relative w-full overflow-x-hidden">
       {/* Background Image - Fixed */}
       <div className="w-screen h-screen overflow-hidden relative">
         <img
           src="/Gemini_Generated_Image_wzsglbwzsglbwzsg.png"
           alt="Fondo"
-          className="w-full h-full object-cover scale-125 translate-x-25"
+          className="w-full h-full object-cover scale-125 md:translate-x-25"
         />
 
         {/* Hero Text - Transitions to div position on scroll */}
         <h1
           className={`absolute z-35 font-italianno transition-all duration-700 ease-out ${
             scrolled
-              ? "text-6xl text-text-dark top-[25%] left-[15%] "
-              : "text-9xl text-white top-[40%] left-[15%] "
+              ? "text-4xl md:text-6xl text-text-dark top-[25%] left-[30%] md:left-[15%] "
+              : "text-6xl md:text-9xl text-white top-[40%] left-[15%] "
           }`}
         >
           Don Quijote
@@ -85,25 +86,67 @@ function App() {
       <div className="vinetta w-screen h-screen" />
 
       {/* Navigation - Fixed */}
-      <nav className="absolute top-0 left-0 right-0 tracking-widest flex justify-between px-10 py-8 z-20 font-sans">
-        {links.map((l) => (
-          <a
-            href={l.link}
-            className="text-white text-lg font-light hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            {l.title}
-          </a>
-        ))}
+      <nav className="absolute top-0 left-0 right-0 tracking-widest flex items-center justify-between px-6 md:px-10 py-6 md:py-8 z-40 font-sans">
+        {/* Mobile hamburger */}
+        <button
+          type="button"
+          className={`md:hidden  z-50 flex flex-col gap-1.5 p-1 ${scrolled ? "text-text-dark" : "text-text-dark"}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span
+            className={`block w-6 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}
+          />
+        </button>
+
+        {/* Desktop nav */}
+        <div className="hidden md:flex w-full justify-between">
+          {links.map((l) => (
+            <a
+              key={l.title}
+              href={l.link}
+              className="text-white text-lg font-light hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              {l.title}
+            </a>
+          ))}
+        </div>
+
+        {/* Mobile nav overlay */}
+        <div
+          className={`md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
+            menuOpen
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          }`}
+        >
+          {links.map((l) => (
+            <a
+              key={l.title}
+              href={l.link}
+              className="text-white text-2xl font-light tracking-widest hover:opacity-80 transition-opacity cursor-pointer"
+              onClick={() => setMenuOpen(false)}
+            >
+              {l.title}
+            </a>
+          ))}
+        </div>
       </nav>
 
       {/* White Left Panel - Slides up from below when scrolled */}
       <div
-        className={`z-30 w-1/2 bg-background h-screen absolute top-0 left-0 transition-transform duration-700 ease-out ${
+        className={`z-30 w-full md:w-1/2 bg-background h-screen absolute top-0 left-0 transition-transform duration-700 ease-out ${
           isExiting || !scrolled ? "translate-y-full" : "translate-y-0"
         }`}
       >
-        <div className=" w-full h-full relative">
-          <p className="absolute  top-[40%] left-[27%] w-60 text-center font-sans tracking-widest  text-base/14">
+        <div className="w-full h-full relative">
+          <p className="absolute top-[40%]  left-[21%]  md:left-[27%] w-52 md:w-60 text-center font-sans tracking-widest text-base/8 md:text-base/14">
             Donde el lujo, cultura y tradición se filtran en cada
             experiencia{" "}
           </p>
@@ -111,53 +154,57 @@ function App() {
       </div>
 
       {/* Content below hero - for scrolling */}
-      <div className="bg-background pt-50">
-        <div className="flex gap-15">
+      <div className="bg-background pt-16 md:pt-50">
+        <div className="flex gap-4 md:gap-15">
           <img
             src="/Gemini_Generated_Image_9yoc2p9yoc2p9yoc.webp"
             alt="Plato fino"
-            className="h-120 aspect-3/5 ms-50"
+            className="h-52 md:h-120 aspect-3/5 ms-6 md:ms-50"
           />
           <div className="">
-            <p className="font-sans tracking-widest text-xl">Exelencia</p>
-            <p className="font-sans tracking-widest mt-20 w-30 text-sm/14">
+            <p className="font-sans tracking-widest text-base md:text-xl">
+              Exelencia
+            </p>
+            <p className="font-sans tracking-widest mt-4 md:mt-20 w-24 md:w-30 text-xs/5 md:text-sm/14">
               Platos concebidos por maestros
             </p>
           </div>
         </div>
-        <div className="flex justify-end pe-30 gap-15 h-120 items-end">
+        <div className="flex justify-end pe-6 md:pe-30 gap-4 md:gap-15 h-52 md:h-120 mt-20 md:mt-0 items-end">
           <div className="text-end">
-            <p className="font-sans tracking-widest text-xl">Alta Cocina</p>
-            <p className="font-sans tracking-widest mt-10 w-30 text-sm/14">
+            <p className="font-sans tracking-widest text-base md:text-xl">
+              Alta Cocina
+            </p>
+            <p className="font-sans tracking-widest mt-3 md:mt-10 w-24 md:w-30 text-xs/5 md:text-sm/14">
               Lujo & Delicia
             </p>
           </div>
           <img
             src="/Gemini_Generated_Image_cj148xcj148xcj14.webp"
             alt="Plato fino"
-            className="h-120 aspect-square"
+            className="h-52 md:h-120 aspect-square"
           />
         </div>
-        <div className="flex justify-between p-30">
-          <div className="">
-            <div className="text-end mb-20">
-              <p className="font-sans tracking-widest text-xl">
+        <div className="flex flex-col md:flex-row justify-between p-6 md:p-30 mt-20 md:mt-0">
+          <div className="w-44 md:w-fit">
+            <div className="text-end mb-6 md:mb-20 w-full">
+              <p className="font-sans tracking-widest text-base md:text-xl">
                 Bebida selecta
               </p>
-              <p className="font-sans tracking-widest mt-5 text-sm">
+              <p className="font-sans tracking-widest mt-2 md:mt-5 text-[10px] md:text-sm">
                 Sólo los mejores vinos
               </p>
             </div>
             <img
               src="/Gemini_Generated_Image_s4n0jts4n0jts4n0.webp"
               alt="Copa de vino"
-              className="h-120 aspect-3/5 ms-20"
+              className="w-40 md:w-fit md:h-120 aspect-3/5 ms-4 md:ms-20"
             />
           </div>
 
-          <div className="">
-            <div className="w-full flex justify-end">
-              <p className="font-sans tracking-widest mt-11 mb-50 w-50 text-end text-sm/14">
+          <div className="flex flex-col justify-end mt-10 md:mt-0">
+            <div className=" w-full flex justify-end">
+              <p className="font-sans tracking-widest mt-4 md:mt-11 mb-10 md:mb-50 w-40 md:w-50 text-end text-xs/5 md:text-sm/14">
                 El maridaje perfecto para coronar una velada verdaderamente
                 inolvidable
               </p>
@@ -165,18 +212,18 @@ function App() {
             <img
               src="/Gemini_Generated_Image_6wp7g76wp7g76wp7.webp"
               alt="Cava"
-              className="h-120 aspect-square"
+              className="h-82 w-fit md:h-120 aspect-square self-end"
             />
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="bg-background] text-text-dark px-25">
+      <footer className="bg-background text-text-dark px-6 md:px-25">
         {/* Pink line at top */}
         <Separator />
 
-        <div className="max-w-7xl mx-auto px-10 py-16">
+        <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Social Media */}
             <div>
