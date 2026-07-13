@@ -9,6 +9,10 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/nunito-sans";
 
+@source "../routes/**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
+@source "../integrations/**/*.{ts,tsx}";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

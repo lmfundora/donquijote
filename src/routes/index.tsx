@@ -2,11 +2,13 @@ import SvgDraw from "#/components/SvgDraw";
 import { Separator } from "#/components/ui/separator";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { authClient } from "#/lib/auth-client";
 
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: session } = authClient.useSession();
 
   // Minimal scroll handler for CSS transitions - no scroll blocking
   useEffect(() => {
@@ -39,6 +41,14 @@ function App() {
       link: "#",
     },
   ];
+
+  const handleAuth = () => {
+    if (session?.user) {
+      authClient.signOut();
+    } else {
+      window.location.href = '/login';
+    }
+  };
   return (
     <main className="relative w-full overflow-x-hidden">
       {/* Background Image - Fixed */}
@@ -77,7 +87,7 @@ function App() {
         </button>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex w-full justify-between text-sm md:text-base lg:text-lg">
+        <div className="hidden md:flex w-full justify-between text-sm md:text-base lg:text-lg items-center">
           {links.map((l) => (
             <a
               key={l.title}
@@ -87,6 +97,12 @@ function App() {
               {l.title}
             </a>
           ))}
+          <button
+            onClick={handleAuth}
+            className="text-white text-lg font-light hover:opacity-80 transition-opacity cursor-pointer"
+          >
+            {session?.user ? 'Cerrar sesión' : 'Iniciar sesión'}
+          </button>
         </div>
 
         {/* Mobile nav overlay */}
@@ -107,6 +123,15 @@ function App() {
               {l.title}
             </a>
           ))}
+          <button
+            onClick={() => {
+              handleAuth()
+              setMenuOpen(false)
+            }}
+            className="text-white text-2xl font-light tracking-widest hover:opacity-80 transition-opacity cursor-pointer"
+          >
+            {session?.user ? 'Cerrar sesión' : 'Iniciar sesión'}
+          </button>
         </div>
       </nav>
 

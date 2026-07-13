@@ -1,10 +1,10 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import Footer from '../components/Footer'
-import Header from '../components/Header'
 
 import ConvexProvider from '../integrations/convex/provider'
+import { useConvexAuthSync } from '../hooks/useConvexAuthSync'
+import { Toaster } from '#/components/ui/sonner'
 
 import appCss from '../styles.css?url'
 
@@ -43,21 +43,31 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
         <ConvexProvider>
-          {children}
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
+          <ConvexAuthSyncWrapper>
+            {children}
+            <TanStackDevtools
+              config={{
+                position: 'bottom-right',
+              }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+          </ConvexAuthSyncWrapper>
         </ConvexProvider>
+        <Toaster />
         <Scripts />
       </body>
     </html>
   )
+}
+
+function ConvexAuthSyncWrapper({ children }: { children: React.ReactNode }) {
+  // Sync Better Auth user to Convex automatically
+  // This must be inside ConvexProvider to use useMutation
+  useConvexAuthSync()
+  return <>{children}</>
 }
