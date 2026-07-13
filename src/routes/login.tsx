@@ -1,23 +1,23 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
-import { authClient } from '#/lib/auth-client'
-import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
+import { authClient } from "#/lib/auth-client";
+import { useForm } from "@tanstack/react-form";
+import { toast } from "sonner";
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute("/login")({
   component: LoginPage,
-})
+});
 
 function LoginPage() {
-  const { data: session, isPending } = authClient.useSession()
-  const router = useRouter()
-  const [isSignUp, setIsSignUp] = useState(false)
+  const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const form = useForm({
     defaultValues: {
-      email: '',
-      password: '',
-      name: '',
+      email: "",
+      password: "",
+      name: "",
     },
     onSubmit: async ({ value }) => {
       try {
@@ -26,63 +26,63 @@ function LoginPage() {
             email: value.email,
             password: value.password,
             name: value.name,
-          })
+          });
           if (result.error) {
-            toast.error(result.error.message || 'Error al crear cuenta')
+            toast.error(result.error.message || "Error al crear cuenta");
           } else {
-            toast.success('Cuenta creada exitosamente')
-            router.navigate({ to: '/' })
+            toast.success("Cuenta creada exitosamente");
+            router.navigate({ to: "/" });
           }
         } else {
           const result = await authClient.signIn.email({
             email: value.email,
             password: value.password,
-          })
+          });
           if (result.error) {
-            toast.error(result.error.message || 'Error al iniciar sesión')
+            toast.error(result.error.message || "Error al iniciar sesión");
           } else {
-            toast.success('Sesión iniciada correctamente')
-            router.navigate({ to: '/' })
+            toast.success("Sesión iniciada correctamente");
+            router.navigate({ to: "/" });
           }
         }
       } catch (err) {
-        toast.error('Ocurrió un error inesperado')
+        toast.error("Ocurrió un error inesperado");
       }
     },
-  })
+  });
 
   if (isPending) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-background">
         <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-800 dark:border-t-neutral-100" />
       </main>
-    )
+    );
   }
 
   if (session?.user) {
-    router.navigate({ to: '/' })
-    return null
+    router.navigate({ to: "/" });
+    return null;
   }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
       <section className="w-full max-w-md space-y-6 bg-white dark:bg-neutral-900 p-8 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800">
         <div className="space-y-1.5 text-center">
-          <h1 className="text-2xl font-bold tracking-widest font-sans">
+          <h1 className="text-2xl font-bold tracking-widest font-italianno">
             Don Quijote
           </h1>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {isSignUp
-              ? 'Crea tu cuenta para continuar'
-              : 'Inicia sesión en tu cuenta'}
+              ? "Crea tu cuenta para continuar"
+              : "Inicia sesión en tu cuenta"}
           </p>
         </div>
 
         <form
           onSubmit={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            form.handleSubmit()
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
           className="grid gap-4"
         >
@@ -91,7 +91,7 @@ function LoginPage() {
               name="name"
               validators={{
                 onChange: ({ value }) =>
-                  !value ? 'El nombre es requerido' : undefined,
+                  !value ? "El nombre es requerido" : undefined,
               }}
             >
               {(field) => (
@@ -124,17 +124,20 @@ function LoginPage() {
             name="email"
             validators={{
               onChange: ({ value }) =>
-                !value ? 'El email es requerido' : undefined,
+                !value ? "El email es requerido" : undefined,
               onChangeAsync: async ({ value }) => {
                 if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                  return 'Email inválido'
+                  return "Email inválido";
                 }
               },
             }}
           >
             {(field) => (
               <div className="grid gap-2">
-                <label htmlFor="email" className="text-sm font-medium leading-none">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium leading-none"
+                >
                   Email
                 </label>
                 <input
@@ -159,10 +162,10 @@ function LoginPage() {
             name="password"
             validators={{
               onChange: ({ value }) =>
-                !value ? 'La contraseña es requerida' : undefined,
+                !value ? "La contraseña es requerida" : undefined,
               onChangeAsync: async ({ value }) => {
                 if (value && value.length < 8) {
-                  return 'La contraseña debe tener al menos 8 caracteres'
+                  return "La contraseña debe tener al menos 8 caracteres";
                 }
               },
             }}
@@ -208,9 +211,9 @@ function LoginPage() {
                     <span>Por favor espera</span>
                   </span>
                 ) : isSignUp ? (
-                  'Crear cuenta'
+                  "Crear cuenta"
                 ) : (
-                  'Iniciar sesión'
+                  "Iniciar sesión"
                 )}
               </button>
             )}
@@ -221,17 +224,17 @@ function LoginPage() {
           <button
             type="button"
             onClick={() => {
-              setIsSignUp(!isSignUp)
-              form.reset()
+              setIsSignUp(!isSignUp);
+              form.reset();
             }}
             className="text-sm text-neutral-600 dark:text-neutral-400 transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
           >
             {isSignUp
-              ? '¿Ya tienes cuenta? Inicia sesión'
-              : '¿No tienes cuenta? Regístrate'}
+              ? "¿Ya tienes cuenta? Inicia sesión"
+              : "¿No tienes cuenta? Regístrate"}
           </button>
         </div>
       </section>
     </main>
-  )
+  );
 }
