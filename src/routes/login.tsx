@@ -72,9 +72,7 @@ function LoginPage() {
             Don Quijote
           </h1>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {isSignUp
-              ? "Crea tu cuenta para continuar"
-              : "Inicia sesión en tu cuenta"}
+            Inicia sesión en tu cuenta
           </p>
         </div>
 
@@ -219,21 +217,6 @@ function LoginPage() {
             )}
           </form.Subscribe>
         </form>
-
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={() => {
-              setIsSignUp(!isSignUp);
-              form.reset();
-            }}
-            className="text-sm text-neutral-600 dark:text-neutral-400 transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
-          >
-            {isSignUp
-              ? "¿Ya tienes cuenta? Inicia sesión"
-              : "¿No tienes cuenta? Regístrate"}
-          </button>
-        </div>
       </section>
     </main>
   );
