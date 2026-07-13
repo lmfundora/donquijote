@@ -11,4 +11,12 @@ export default defineSchema({
     text: v.string(),
     completed: v.boolean(),
   }),
+  users: defineTable({
+    email: v.string(),
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    clerkId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index('by_email', ['email']),
 })
