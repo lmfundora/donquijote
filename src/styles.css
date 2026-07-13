@@ -196,7 +196,7 @@
 
 /* Scroll-driven animations using CSS transitions */
 .hero-title {
-    font-size: clamp(2.5rem, 8vw, 9rem);
+    font-size: 4rem;
     color: white;
     top: 40%;
     left: 15%;
@@ -205,7 +205,7 @@
 
 @media (min-width: 768px) {
     .hero-title {
-        font-size: clamp(4rem, 8vw, 9rem);
+        font-size: 8rem;
         color: white;
         top: 40%;
         left: 15%;
@@ -214,7 +214,7 @@
 
 @media (min-width: 1024px) {
     .hero-title {
-        font-size: clamp(5rem, 8vw, 9rem);
+        font-size: 9rem;
         color: white;
         top: 40%;
         left: 15%;
@@ -241,7 +241,7 @@
 
 /* Scrolled state */
 body.scrolled .hero-title {
-    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-size: 4rem;
     color: var(--text-dark);
     top: 25%;
     left: 24%;
@@ -249,7 +249,7 @@ body.scrolled .hero-title {
 
 @media (min-width: 768px) {
     body.scrolled .hero-title {
-        font-size: clamp(3rem, 6vw, 5rem);
+        font-size: 5rem;
         color: var(--text-dark);
         top: 25%;
         left: 15%;
@@ -258,7 +258,7 @@ body.scrolled .hero-title {
 
 @media (min-width: 1024px) {
     body.scrolled .hero-title {
-        font-size: clamp(3.5rem, 6vw, 5rem);
+        font-size: 5rem;
         color: var(--text-dark);
         top: 25%;
         left: 15%;
