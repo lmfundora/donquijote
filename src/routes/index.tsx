@@ -46,7 +46,7 @@ function App() {
     if (session?.user) {
       authClient.signOut();
     } else {
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
   };
   return (
@@ -101,7 +101,7 @@ function App() {
             onClick={handleAuth}
             className="text-white text-lg font-light hover:opacity-80 transition-opacity cursor-pointer"
           >
-            {session?.user ? 'Cerrar sesión' : 'Iniciar sesión'}
+            {session?.user ? "Cerrar sesión" : "Iniciar sesión"}
           </button>
         </div>
 
@@ -125,12 +125,12 @@ function App() {
           ))}
           <button
             onClick={() => {
-              handleAuth()
-              setMenuOpen(false)
+              handleAuth();
+              setMenuOpen(false);
             }}
             className="text-white text-2xl font-light tracking-widest hover:opacity-80 transition-opacity cursor-pointer"
           >
-            {session?.user ? 'Cerrar sesión' : 'Iniciar sesión'}
+            {session?.user ? "Cerrar sesión" : "Iniciar sesión"}
           </button>
         </div>
       </nav>
@@ -138,10 +138,15 @@ function App() {
       {/* White Left Panel - Scroll-driven animation */}
       <div className="white-panel z-30 w-full bg-background h-screen absolute top-0 left-0">
         <div className="w-full h-full relative">
-          <p className="absolute top-[40%]  left-[25%]  md:left-[22%] lg:left-[32%] w-[13vw] md:w-[16vw] lg:w-[15vw] text-center font-sans tracking-widest text-[0.875rem]/[1.5] md:text-[1.125rem]/[2.5] lg:text-[1rem]/[3.5]">
+          <p className="absolute top-[40%]  left-[25%]  md:left-[22%] lg:left-[32%] w-52 md:w-64 lg:w-60 text-center font-sans tracking-widest text-sm/6 md:text-lg/10 lg:text-base/14">
             Donde el lujo, cultura y tradición se filtran en cada
             experiencia{" "}
           </p>
+          <img
+            src="/logo.webp"
+            alt="Don Quijote logo"
+            className="absolute top-[70%]  left-[31%]  md:left-[30%] lg:left-[38%] w-40"
+          />
         </div>
       </div>
 
@@ -163,57 +168,57 @@ function App() {
       </div>
 
       {/* Content below hero - for scrolling */}
-      <div className="pt-[4vw] md:pt-[10vw] lg:pt-[12vw] relative z-10">
-        <div className="flex gap-[1vw] md:gap-[3vw] lg:gap-[4vw]">
+      <div className="bg-background pt-16 md:pt-40 lg:pt-50">
+        <div className="flex gap-4 md:gap-12 lg:gap-15">
           <img
             src="/20260704_184003.webp"
             alt="Plato fino"
-            className="h-[13vw] md:h-[25vw] lg:h-[30vw] aspect-3/5 ms-[1.5vw] md:ms-[4vw] lg:ms-[12vw] max-h-[30rem]"
+            className="h-52 md:h-96 lg:h-120 aspect-3/5 ms-6 md:ms-16 lg:ms-50"
           />
           <div className="">
-            <p className="font-sans tracking-widest text-[1rem] md:text-[1.25rem] lg:text-[1.5rem]">
+            <p className="font-sans tracking-widest text-base md:text-xl lg:text-xl">
               Exelencia
             </p>
-            <p className="font-sans tracking-widest mt-[1vw] md:mt-[3vw] lg:mt-[5vw] w-[6vw] md:w-[8vw] lg:w-[7vw] text-[0.75rem]/[1.25] md:text-[0.875rem]/[1.4] lg:text-[0.875rem]/[1.6]">
-              Tragos concebidos por maestros
+            <p className="font-sans tracking-widest mt-4 md:mt-12 lg:mt-20 w-24 md:w-32 lg:w-30 text-xs/5 md:text-sm/7 lg:text-sm/14">
+              Platos concebidos por maestros
             </p>
           </div>
         </div>
-        <div className="flex justify-end pe-[1.5vw] md:pe-[4vw] lg:pe-[7.5vw] gap-[1vw] md:gap-[3vw] lg:gap-[4vw] h-[13vw] md:h-[25vw] lg:h-[30vw] mt-[5Vw] md:mt-0 items-end">
+        <div className="flex justify-end pe-6 md:pe-16 lg:pe-30 gap-4 md:gap-12 lg:gap-15 h-52 md:h-96 lg:h-120 mt-20 md:mt-0 items-end">
           <div className="text-end">
-            <p className="font-sans tracking-widest text-[1rem] md:text-[1.25rem] lg:text-[1.5rem]">
+            <p className="font-sans tracking-widest text-base md:text-xl lg:text-xl">
               Alta Cocina
             </p>
-            <p className="font-sans tracking-widest mt-[0.75vw] md:mt-[2vw] lg:mt-[2.5vw] w-[6vw] md:w-[8vw] lg:w-[7vw] text-[0.75rem]/[1.25] md:text-[0.875rem]/[1.4] lg:text-[0.875rem]/[1.6]">
+            <p className="font-sans tracking-widest mt-3 md:mt-8 lg:mt-10 w-24 md:w-32 lg:w-30 text-xs/5 md:text-sm/7 lg:text-sm/14">
               Lujo & Delicia
             </p>
           </div>
           <img
             src="/_QJT1440.webp"
             alt="Plato fino"
-            className="h-[13vw] md:h-[25vw] lg:h-[30vw] aspect-square max-h-[30rem]"
+            className="h-52 md:h-96 lg:h-120 aspect-square"
           />
         </div>
-        <div className="flex flex-col md:flex-row justify-between p-[1.5vw] md:p-[4vw] lg:p-[7.5vw] mt-[5vw] md:mt-0">
-          <div className="w-[11vw] md:w-[14vw] lg:w-fit">
-            <div className="text-end mb-[1.5vw] md:mb-[5vw] w-full">
-              <p className="font-sans tracking-widest text-[1rem] md:text-[1.25rem] lg:text-[1.5rem]">
+        <div className="flex flex-col md:flex-row justify-between p-6 md:p-16 lg:p-30 mt-20 md:mt-0">
+          <div className="w-44 md:w-56 lg:w-fit">
+            <div className="text-end mb-6 md:mb-20 w-full">
+              <p className="font-sans tracking-widest text-base md:text-xl lg:text-xl">
                 Bebida selecta
               </p>
-              <p className="font-sans tracking-widest mt-[0.5vw] md:mt-[1.5vw] lg:mt-[1.25vw] text-[0.625rem] md:text-[0.875rem] lg:text-[0.875rem]">
+              <p className="font-sans tracking-widest mt-2 md:mt-6 lg:mt-5 text-[10px] md:text-sm lg:text-sm">
                 Sólo los mejores vinos
               </p>
             </div>
             <img
               src="/20260621_.webp"
               alt="Copa de vino"
-              className="w-[10vw] md:w-[14vw] object-cover lg:w-fit md:h-[25vw] lg:h-[30vw] aspect-3/5 ms-[1vw] md:ms-[3vw] lg:ms-[5vw] max-h-[30rem]"
+              className="w-40 md:w-56 lg:w-fit md:h-96 lg:h-120 aspect-3/5 ms-4 md:ms-12 lg:ms-20"
             />
           </div>
 
-          <div className="flex flex-col justify-end mt-[2.5vw] md:mt-0">
+          <div className="flex flex-col justify-end mt-10 md:mt-0">
             <div className=" w-full flex justify-end">
-              <p className="font-sans tracking-widest mt-[1vw] md:mt-[2.5vw] lg:mt-[2.75vw] mb-[2.5vw] md:mb-[6vw] lg:mb-[12.5vw] w-[10vw] md:w-[13vw] lg:w-[12.5vw] text-end text-[0.75rem]/[1.25] md:text-[0.875rem]/[1.4] lg:text-[0.875rem]/[1.6]">
+              <p className="font-sans tracking-widest mt-4 md:mt-10 lg:mt-11 mb-10 md:mb-24 lg:mb-50 w-40 md:w-52 lg:w-50 text-end text-xs/5 md:text-sm/7 lg:text-sm/14">
                 El maridaje perfecto para coronar una velada verdaderamente
                 inolvidable
               </p>
@@ -221,7 +226,7 @@ function App() {
             <img
               src="/20260708_154439.webp"
               alt="Cava"
-              className="h-[15vw] md:h-[25vw] lg:h-[30vw] aspect-square self-end object-cover max-h-[30rem]"
+              className="h-60 md:h-96 lg:h-120 aspect-square self-end"
             />
           </div>
         </div>
