@@ -1,14 +1,14 @@
 import SvgDraw from "#/components/SvgDraw";
 import { Separator } from "#/components/ui/separator";
-import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "#/components/ui/button";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { authClient } from "#/lib/auth-client";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { data: session } = authClient.useSession();
 
   // Minimal scroll handler for CSS transitions - no scroll blocking
   useEffect(() => {
@@ -25,30 +25,22 @@ function App() {
 
   const links = [
     {
-      title: "Comida",
-      link: "#",
+      title: "Bar",
+      to: "/bar",
     },
     {
-      title: "Bebida",
-      link: "#",
+      title: "Restaurante",
+      to: "/restaurante",
     },
     {
-      title: "Otros",
-      link: "#",
+      title: "Disco",
+      to: "/disco",
     },
     {
-      title: "Reservar",
-      link: "#",
+      title: "Muro",
+      to: "/muro",
     },
   ];
-
-  const handleAuth = () => {
-    if (session?.user) {
-      authClient.signOut();
-    } else {
-      window.location.href = "/login";
-    }
-  };
   return (
     <main className="relative w-full overflow-x-hidden">
       {/* Background Image - Fixed */}
@@ -61,6 +53,17 @@ function App() {
 
         {/* Hero Text - Scroll-driven animation */}
         <h1 className="hero-title absolute z-35 font-italianno">Don Quijote</h1>
+
+        {/* CTA Button */}
+        <Link to="/home" className="hero-button absolute z-35">
+          <Button
+            variant={"outline"}
+            className="font-sans tracking-widest text-white hover:bg-accent transition-colors duration-300 gap-2"
+          >
+            Ver secciones
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
 
       {/* Vignette Overlay - Fixed */}
@@ -89,20 +92,14 @@ function App() {
         {/* Desktop nav */}
         <div className="hidden md:flex w-full justify-between text-sm md:text-base lg:text-lg items-center">
           {links.map((l) => (
-            <a
+            <Link
               key={l.title}
-              href={l.link}
+              to={l.to}
               className="text-white text-lg font-light hover:opacity-80 transition-opacity cursor-pointer"
             >
               {l.title}
-            </a>
+            </Link>
           ))}
-          <button
-            onClick={handleAuth}
-            className="text-white text-lg font-light hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            {session?.user ? "Cerrar sesión" : "Iniciar sesión"}
-          </button>
         </div>
 
         {/* Mobile nav overlay */}
@@ -114,38 +111,29 @@ function App() {
           }`}
         >
           {links.map((l) => (
-            <a
+            <Link
               key={l.title}
-              href={l.link}
+              to={l.to}
               className="text-white text-2xl font-light tracking-widest hover:opacity-80 transition-opacity cursor-pointer"
               onClick={() => setMenuOpen(false)}
             >
               {l.title}
-            </a>
+            </Link>
           ))}
-          <button
-            onClick={() => {
-              handleAuth();
-              setMenuOpen(false);
-            }}
-            className="text-white text-2xl font-light tracking-widest hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            {session?.user ? "Cerrar sesión" : "Iniciar sesión"}
-          </button>
         </div>
       </nav>
 
       {/* White Left Panel - Scroll-driven animation */}
       <div className="white-panel z-30 w-full bg-background h-screen absolute top-0 left-0">
         <div className="w-full h-full relative">
-          <p className="absolute top-[40%]  left-[25%]  md:left-[22%] lg:left-[32%] w-52 md:w-64 lg:w-60 text-center font-sans tracking-widest text-sm/6 md:text-lg/10 lg:text-base/14">
+          <p className="absolute top-[35%]  left-[25%]  md:left-[22%] lg:left-[32%] w-52 md:w-64 lg:w-60 text-center font-sans tracking-widest text-sm/6 md:text-lg/10 lg:text-base/14">
             Donde el lujo, cultura y tradición se filtran en cada
             experiencia{" "}
           </p>
           <img
             src="/logo.webp"
             alt="Don Quijote logo"
-            className="absolute top-[70%]  left-[31%]  md:left-[30%] lg:left-[38%] w-40"
+            className="absolute top-[75%]  left-[31%]  md:left-[30%] lg:left-[38%] w-40"
           />
         </div>
       </div>

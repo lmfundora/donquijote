@@ -71,6 +71,10 @@
     --sidebar-accent-foreground: oklch(0.214 0.009 43.1);
     --sidebar-border: oklch(0.922 0.005 34.3);
     --sidebar-ring: oklch(0.714 0.014 41.2);
+
+    /* Variables de fuente para shadcn/ui */
+    --font-sans: "Instrument Sans", sans-serif;
+    --font-heading: "Instrument Sans", sans-serif;
 }
 
 .dark {
@@ -126,6 +130,10 @@
     --sidebar-accent-foreground: oklch(0.986 0.002 67.8);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.547 0.021 43.1);
+
+    /* Variables de fuente para shadcn/ui en modo dark */
+    --font-sans: "Instrument Sans", sans-serif;
+    --font-heading: "Instrument Sans", sans-serif;
 }
 
 @theme inline {
@@ -221,6 +229,29 @@
     }
 }
 
+.hero-button {
+    top: 52%;
+    left: 35%;
+    transform: translateX(-50%);
+    transition: all 0.7s ease-out;
+}
+
+@media (min-width: 768px) {
+    .hero-button {
+        top: 65%;
+        left: 25%;
+        transform: translateX(-50%);
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-button {
+        top: 65%;
+        left: 21%;
+        transform: translateX(-50%);
+    }
+}
+
 .white-panel {
     transform: translateY(100%);
     transition: transform 0.7s ease-out;
@@ -251,7 +282,7 @@ body.scrolled .hero-title {
     body.scrolled .hero-title {
         font-size: 5rem;
         color: var(--text-dark);
-        top: 25%;
+        top: 20%;
         left: 15%;
     }
 }
@@ -260,8 +291,36 @@ body.scrolled .hero-title {
     body.scrolled .hero-title {
         font-size: 5rem;
         color: var(--text-dark);
-        top: 25%;
+        top: 20%;
         left: 15%;
+    }
+}
+
+body.scrolled .hero-button button {
+    background-color: var(--text-dark);
+    color: white;
+    border-color: var(--text-dark);
+}
+
+body.scrolled .hero-button {
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@media (min-width: 768px) {
+    body.scrolled .hero-button {
+        top: 62%;
+        left: 32%;
+        transform: translateX(-50%);
+    }
+}
+
+@media (min-width: 1024px) {
+    body.scrolled .hero-button {
+        top: 62%;
+        left: 24.5%;
+        transform: translateX(-50%);
     }
 }
 

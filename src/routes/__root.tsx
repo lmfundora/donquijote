@@ -1,38 +1,84 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import {
+  HeadContent,
+  Scripts,
+  Outlet,
+  createRootRouteWithContext,
+  useRouteContext,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
 
-import ConvexProvider from '../integrations/convex/provider'
-import { useConvexAuthSync } from '../hooks/useConvexAuthSync'
-import { Toaster } from '#/components/ui/sonner'
+import { createServerFn } from "@tanstack/react-start";
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import type { ConvexQueryClient } from "@convex-dev/react-query";
+import type { QueryClient } from "@tanstack/react-query";
+import { authClient } from "#/lib/auth-client";
+import { getToken } from "#/lib/auth-server";
 
-import appCss from '../styles.css?url'
+// Get auth information for SSR using available cookies
+const getAuth = createServerFn({ method: "GET" }).handler(async () => {
+  return await getToken();
+});
 
-const THEME_INIT_SCRIPT = `(function(){try{var mode='light';var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(mode);root.setAttribute('data-theme',mode);root.style.colorScheme=mode;}catch(e){}})();`
+import { Toaster } from "#/components/ui/sonner";
 
-export const Route = createRootRoute({
+import appCss from "../styles.css?url";
+
+const THEME_INIT_SCRIPT = `(function(){try{var mode='light';var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(mode);root.setAttribute('data-theme',mode);root.style.colorScheme=mode;}catch(e){}})();`;
+
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+  convexQueryClient: ConvexQueryClient;
+}>()({
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: "utf-8",
       },
       {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'TanStack Start Starter',
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
       },
     ],
     links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico" },
     ],
   }),
-  shellComponent: RootDocument,
-})
+  beforeLoad: async (ctx) => {
+    const token = await getAuth();
+
+    // all queries, mutations and actions through TanStack Query will be
+    // authenticated during SSR if we have a valid token
+    if (token) {
+      // During SSR only (the only time serverHttpClient exists),
+      // set the auth token to make HTTP queries with.
+      ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
+    }
+
+    return {
+      isAuthenticated: !!token,
+      token,
+    };
+  },
+  component: RootComponent,
+});
+
+function RootComponent() {
+  const context = useRouteContext({ from: Route.id });
+  return (
+    <ConvexBetterAuthProvider
+      client={context.convexQueryClient.convexClient}
+      // @ts-expect-error - Type mismatch between better-auth versions, will be resolved in future update
+      authClient={authClient}
+      initialToken={context.token}
+    >
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
+    </ConvexBetterAuthProvider>
+  );
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -42,32 +88,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
-        <ConvexProvider>
-          <ConvexAuthSyncWrapper>
-            {children}
-            <TanStackDevtools
-              config={{
-                position: 'bottom-right',
-              }}
-              plugins={[
-                {
-                  name: 'Tanstack Router',
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-              ]}
-            />
-          </ConvexAuthSyncWrapper>
-        </ConvexProvider>
+        {children}
+        <TanStackDevtools
+          config={{
+            position: "bottom-right",
+          }}
+          plugins={[
+            {
+              name: "Tanstack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
         <Toaster />
         <Scripts />
       </body>
     </html>
-  )
-}
-
-function ConvexAuthSyncWrapper({ children }: { children: React.ReactNode }) {
-  // Sync Better Auth user to Convex automatically
-  // This must be inside ConvexProvider to use useMutation
-  useConvexAuthSync()
-  return <>{children}</>
+  );
 }

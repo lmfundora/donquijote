@@ -1,5 +1,6 @@
 import { authClient } from '#/lib/auth-client'
 import { Link } from '@tanstack/react-router'
+import { toast } from 'sonner'
 
 export default function BetterAuthHeader() {
   const { data: session, isPending } = authClient.useSession()
@@ -26,20 +27,43 @@ export default function BetterAuthHeader() {
           onClick={() => {
             void authClient.signOut()
           }}
-          className="flex-1 h-9 px-4 text-sm font-medium bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-50 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+          className="h-9 px-4 text-sm font-medium bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-50 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
         >
           Sign out
+        </button>
+        <button
+          onClick={async () => {
+            if (confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+              try {
+                await authClient.deleteUser()
+                toast.success('Cuenta eliminada correctamente')
+              } catch (error) {
+                toast.error('Error al eliminar la cuenta')
+              }
+            }
+          }}
+          className="h-9 px-4 text-sm font-medium bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 transition-colors"
+        >
+          Delete account
         </button>
       </div>
     )
   }
 
   return (
-    <Link
-      to="/demo/better-auth"
-      className="h-9 px-4 text-sm font-medium bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-50 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors inline-flex items-center"
-    >
-      Sign in
-    </Link>
+    <div className="flex items-center gap-2">
+      <Link
+        to="/register"
+        className="h-9 px-4 text-sm font-medium text-neutral-900 dark:text-neutral-50 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors inline-flex items-center"
+      >
+        Sign up
+      </Link>
+      <Link
+        to="/login"
+        className="h-9 px-4 text-sm font-medium bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-50 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors inline-flex items-center"
+      >
+        Sign in
+      </Link>
+    </div>
   )
 }

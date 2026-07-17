@@ -1,22 +1,27 @@
-import { defineSchema, defineTable } from 'convex/server'
-import { v } from 'convex/values'
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
 export default defineSchema({
-  products: defineTable({
-    title: v.string(),
-    imageId: v.string(),
-    price: v.number(),
-  }),
   todos: defineTable({
     text: v.string(),
     completed: v.boolean(),
   }),
-  users: defineTable({
-    email: v.string(),
-    name: v.optional(v.string()),
-    image: v.optional(v.string()),
-    clerkId: v.optional(v.string()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }).index('by_email', ['email']),
-})
+  sections: defineTable({
+    name: v.string(),
+    description: v.string(),
+    imageUrl: v.optional(v.string()),
+    order: v.number(),
+  }),
+  categories: defineTable({
+    name: v.string(),
+  }),
+  products: defineTable({
+    name: v.string(),
+    description: v.string(),
+    imageUrl: v.optional(v.string()),
+    price: v.number(),
+    categoryId: v.optional(v.id("categories")),
+    sectionId: v.id("sections"),
+    allergens: v.optional(v.array(v.string())),
+  }),
+});
