@@ -26,6 +26,33 @@ export const list = query({
   },
 });
 
+export const listBySection = query({
+  args: { sectionId: v.id("sections") },
+  handler: async (ctx, args) => {
+    const products = await ctx.db
+      .query("products")
+      .withIndex("by_section", (q) => q.eq("sectionId", args.sectionId))
+      .collect();
+
+    return await Promise.all(
+      products.map(async (product) => {
+        if (!product.imageUrl) return product;
+
+        const storageId = product.imageUrl.startsWith("http")
+          ? product.imageUrl.split("/api/storage/")[1] || product.imageUrl
+          : product.imageUrl;
+
+        try {
+          const url = await ctx.storage.getUrl(storageId as any);
+          return { ...product, imageUrl: url };
+        } catch {
+          return { ...product, imageUrl: null };
+        }
+      })
+    );
+  },
+});
+
 export const getById = query({
   args: { id: v.id("products") },
   handler: async (ctx, args) => {

@@ -11,7 +11,9 @@ export default defineSchema({
     description: v.string(),
     imageUrl: v.optional(v.string()),
     order: v.number(),
-  }),
+    slug: v.optional(v.string()),
+    showOnLanding: v.optional(v.boolean()),
+  }).index("by_slug", ["slug"]),
   categories: defineTable({
     name: v.string(),
   }),
@@ -23,5 +25,5 @@ export default defineSchema({
     categoryId: v.optional(v.id("categories")),
     sectionId: v.id("sections"),
     allergens: v.optional(v.array(v.string())),
-  }),
+  }).index("by_section", ["sectionId"]),
 });

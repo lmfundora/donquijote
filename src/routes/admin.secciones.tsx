@@ -18,6 +18,7 @@ import {
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Textarea } from "#/components/ui/textarea";
+import { Switch } from "#/components/ui/switch";
 
 export const Route = createFileRoute("/admin/secciones")({
   component: SeccionesPage,
@@ -112,8 +113,22 @@ function SeccionesPage() {
                 </div>
               )}
               <CardHeader>
-                <CardTitle>{section.name}</CardTitle>
-                <CardDescription>{section.description}</CardDescription>
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <CardTitle className="text-lg leading-tight">{section.name}</CardTitle>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0 ${
+                    section.showOnLanding !== false 
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" 
+                      : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                  }`}>
+                    {section.showOnLanding !== false ? "En Landing" : "Oculto"}
+                  </span>
+                </div>
+                <CardDescription className="line-clamp-2">{section.description}</CardDescription>
+                {section.slug && (
+                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted px-2 py-0.5 rounded-sm inline-block w-fit">
+                    /{section.slug}
+                  </p>
+                )}
               </CardHeader>
               <CardFooter className="flex gap-2 justify-between">
                 <Button
@@ -183,12 +198,27 @@ function SectionForm({
   );
   const [isUploading, setIsUploading] = useState(false);
 
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Remove accents
+      .replace(/\s+/g, "-") // Replace spaces with -
+      .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+      .replace(/\-\-+/g, "-") // Replace multiple - with single -
+      .replace(/^-+/, "") // Trim - from start
+      .replace(/-+$/, ""); // Trim - from end
+  };
+
   const form = useForm({
     defaultValues: {
       name: section?.name || "",
       description: section?.description || "",
       imageUrl: section?.imageUrl || "",
       order: section?.order || 0,
+      slug: section?.slug || "",
+      showOnLanding: section?.showOnLanding !== false,
     },
     onSubmit: async ({ value }) => {
       let imageUrl = value.imageUrl;
@@ -272,13 +302,69 @@ function SectionForm({
               name={field.name}
               value={field.state.value}
               onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                field.handleChange(val);
+                if (!section) {
+                  form.setFieldValue("slug", slugify(val));
+                }
+              }}
             />
             {field.state.meta.errors.length > 0 && (
               <p className="text-sm text-destructive">
                 {field.state.meta.errors[0]}
               </p>
             )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="slug"
+        validators={{
+          onChange: ({ value }) => {
+            if (!value) return "La URL/Slug es requerida";
+            if (!/^[a-z0-9-]+$/.test(value)) {
+              return "La URL solo debe contener letras minúsculas, números y guiones (ej. mi-seccion)";
+            }
+            return undefined;
+          },
+        }}
+      >
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor="slug">URL / Slug de la Sección</Label>
+            <Input
+              id="slug"
+              name={field.name}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              placeholder="ej. bar-quijote"
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="showOnLanding">
+        {(field) => (
+          <div className="flex items-center justify-between rounded-lg border border-border p-3">
+            <div className="space-y-0.5">
+              <Label htmlFor="showOnLanding">Mostrar en Landing</Label>
+              <p className="text-xs text-muted-foreground">
+                Si está activo, la sección se mostrará en el menú principal.
+              </p>
+            </div>
+            <Switch
+              id="showOnLanding"
+              checked={field.state.value}
+              onCheckedChange={(checked) => field.handleChange(checked)}
+            />
           </div>
         )}
       </form.Field>

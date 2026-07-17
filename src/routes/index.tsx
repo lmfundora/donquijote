@@ -4,11 +4,14 @@ import { Button } from "#/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { useConvexQuery } from "@convex-dev/react-query";
+import { api } from "../../convex/_generated/api";
 
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const sections = useConvexQuery(api.sections.list, {});
 
   // Minimal scroll handler for CSS transitions - no scroll blocking
   useEffect(() => {
@@ -23,24 +26,12 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const links = [
-    {
-      title: "Bar",
-      to: "/bar",
-    },
-    {
-      title: "Restaurante",
-      to: "/restaurante",
-    },
-    {
-      title: "Disco",
-      to: "/disco",
-    },
-    {
-      title: "Muro",
-      to: "/muro",
-    },
-  ];
+  const links = sections
+    ?.filter((section: any) => section.showOnLanding !== false)
+    .map((section: any) => ({
+      title: section.name,
+      to: section.slug ? `/home/${section.slug}` : `/home/${section.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`,
+    })) || [];
   return (
     <main className="relative w-full overflow-x-hidden">
       {/* Background Image - Fixed */}
