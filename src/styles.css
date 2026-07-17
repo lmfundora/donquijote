@@ -364,8 +364,8 @@ body.scrolled .white-panel {
     width: calc(100% + 5px);
     height: calc(100% + 5px);
     object-fit: cover;
-    filter: blur(25px) brightness(1.15) saturate(1.2);
-    opacity: 0.6;
+    filter: blur(17px) brightness(1.15) saturate(1.2);
+    opacity: 0.3;
     z-index: -1;
     border-radius: 12px;
 }
