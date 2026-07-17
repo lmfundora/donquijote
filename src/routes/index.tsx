@@ -26,12 +26,18 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const links = sections
-    ?.filter((section: any) => section.showOnLanding !== false)
-    .map((section: any) => ({
-      title: section.name,
-      to: section.slug ? `/home/${section.slug}` : `/home/${section.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`,
-    })) || [];
+  const links =
+    sections
+      ?.filter((section: any) => section.showOnLanding !== false)
+      .map((section: any) => ({
+        title: section.name,
+        to: section.slug
+          ? `/home/${section.slug}`
+          : `/home/${section.name
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")}`,
+      })) || [];
   return (
     <main className="relative w-full overflow-x-hidden">
       {/* Background Image - Fixed */}
@@ -149,11 +155,18 @@ function App() {
       {/* Content below hero - for scrolling */}
       <div className="relative pt-16 md:pt-40 lg:pt-50 z-10">
         <div className="flex gap-4 md:gap-12 lg:gap-15">
-          <img
-            src="/20260704_184003.webp"
-            alt="Plato fino"
-            className="h-52 md:h-96 lg:h-120 aspect-3/5 ms-6 md:ms-16 lg:ms-50"
-          />
+          <div className="vignette-container h-52 md:h-96 lg:h-120 aspect-3/5 ms-6 md:ms-16 lg:ms-50">
+            <img
+              src="/20260704_184003.webp"
+              alt="Plato fino"
+              className="vignette-blur"
+            />
+            <img
+              src="/20260704_184003.webp"
+              alt="Plato fino"
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div className="">
             <p className="font-sans tracking-widest text-base md:text-xl lg:text-xl">
               Exelencia
@@ -172,11 +185,18 @@ function App() {
               Lujo & Delicia
             </p>
           </div>
-          <img
-            src="/_QJT1440.webp"
-            alt="Plato fino"
-            className="h-52 md:h-96 lg:h-120 aspect-square"
-          />
+          <div className="vignette-container h-52 md:h-96 lg:h-120 aspect-square">
+            <img
+              src="/_QJT1440.webp"
+              alt="Plato fino"
+              className="vignette-blur"
+            />
+            <img
+              src="/_QJT1440.webp"
+              alt="Plato fino"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
         <div className="flex flex-col md:flex-row justify-between p-6 md:p-16 lg:p-30 mt-20 md:mt-0">
           <div className="w-44 md:w-56 lg:w-fit">
@@ -188,11 +208,18 @@ function App() {
                 Sólo los mejores vinos
               </p>
             </div>
-            <img
-              src="/20260621_.webp"
-              alt="Copa de vino"
-              className="w-40 md:w-56 lg:w-fit md:h-96 lg:h-120 aspect-3/5 ms-4 md:ms-12 lg:ms-20"
-            />
+            <div className="vignette-container w-40 md:w-56 lg:w-fit md:h-96 lg:h-120 aspect-3/5 ms-4 md:ms-12 lg:ms-20">
+              <img
+                src="/20260621_.webp"
+                alt="Copa de vino"
+                className="vignette-blur"
+              />
+              <img
+                src="/20260621_.webp"
+                alt="Copa de vino"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col justify-end mt-10 md:mt-0">
@@ -202,11 +229,18 @@ function App() {
                 inolvidable
               </p>
             </div>
-            <img
-              src="/20260708_154439.webp"
-              alt="Cava"
-              className="h-60 md:h-96 lg:h-120 aspect-square self-end"
-            />
+            <div className="vignette-container h-60 md:h-96 lg:h-120 aspect-square self-end">
+              <img
+                src="/20260708_154439.webp"
+                alt="Cava"
+                className="vignette-blur"
+              />
+              <img
+                src="/20260708_154439.webp"
+                alt="Cava"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </div>

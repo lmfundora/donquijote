@@ -15,7 +15,7 @@ export default function SvgDraw({
     <svg
       viewBox={viewBox}
       className={className}
-      fill="none"
+      fill="currentColor"
       stroke="currentColor"
       strokeWidth={strokeWidth}
       strokeLinecap="round"

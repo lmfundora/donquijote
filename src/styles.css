@@ -330,12 +330,15 @@ body.scrolled .white-panel {
 @keyframes draw {
     0% {
         stroke-dashoffset: 12000;
+        fill-opacity: 0;
     }
     50% {
         stroke-dashoffset: 0;
+        fill-opacity: 0.15;
     }
     100% {
         stroke-dashoffset: 12000;
+        fill-opacity: 0;
     }
 }
 
@@ -343,4 +346,35 @@ body.scrolled .white-panel {
     stroke-dasharray: 12000;
     stroke-dashoffset: 12000;
     animation: draw 30s linear infinite;
+}
+
+.vignette-container {
+    position: relative;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    overflow: visible;
+}
+
+.vignette-blur {
+    position: absolute;
+    inset: 0px;
+    width: calc(100% + 5px);
+    height: calc(100% + 5px);
+    object-fit: cover;
+    filter: blur(25px) brightness(1.15) saturate(1.2);
+    opacity: 0.6;
+    z-index: -1;
+    border-radius: 12px;
+}
+
+.vignette-container img:not(.vignette-blur) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
 }
