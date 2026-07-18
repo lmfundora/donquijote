@@ -61,7 +61,7 @@ function HomeComponent() {
                     alt={section.name}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
                   />
-                  <div className="absolute inset-0 bg-black/45 group-hover:bg-black/40 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-linear-to-l from-black/90 via-black/40 to-transparent group-hover:from-black/55 group-hover:via-black/35 transition-all duration-300" />
 
                   {/* Logo bottom-left */}
                   <div className="absolute bottom-3 left-4 md:bottom-5 md:left-6 flex items-center">

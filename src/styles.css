@@ -28,8 +28,10 @@
     --line: rgba(23, 58, 64, 0.14);
     --inset-glint: rgba(255, 255, 255, 0.82);
     --kicker: rgba(47, 106, 74, 0.9);
-    --bg-base: #fff6ef; /* <-- Cambiado de #e7f3ec */
-    --background: oklch(0.975 0.012 85); /* <-- Color crema en oklch */
+    --bg-base: #fff6ef;
+    /* <-- Cambiado de #e7f3ec */
+    --background: oklch(0.975 0.012 85);
+    /* <-- Color crema en oklch */
     --header-bg: rgba(251, 255, 248, 0.84);
     --chip-bg: rgba(255, 255, 255, 0.8);
     --chip-line: rgba(47, 106, 74, 0.18);
@@ -327,15 +329,18 @@ body.scrolled .hero-button {
 body.scrolled .white-panel {
     transform: translateY(0);
 }
+
 @keyframes draw {
     0% {
         stroke-dashoffset: 12000;
         fill-opacity: 0;
     }
+
     50% {
         stroke-dashoffset: 0;
         fill-opacity: 0.15;
     }
+
     100% {
         stroke-dashoffset: 12000;
         fill-opacity: 0;
@@ -350,12 +355,24 @@ body.scrolled .white-panel {
 
 .vignette-container {
     position: relative;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    overflow: visible;
+}
+
+/* Shadow 4 Inner Shadow — applied directly ON TOP of the image */
+.vignette-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 4;
+    /* Shadow 4: exact values from reference */
+    box-shadow:
+        /* Inner shadow 1: white highlight from top-left (Blur:43, X/Y:-31, 64% #FFFFFF) */
+        inset -31px -31px 43px rgba(13, 39, 80, 0.56),
+        /* Inner shadow 2: dark depth from bottom-right (Blur:48, X/Y:26, 16% #0D2750) */
+        inset 26px 26px 48px rgba(255, 255, 255, 0.84);
 }
 
 .vignette-blur {
