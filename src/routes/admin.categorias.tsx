@@ -3,7 +3,7 @@ import { useState } from "react";
 import { authClient } from "#/lib/auth-client";
 import { useConvexMutation, useConvexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, X } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { Button } from "#/components/ui/button";
@@ -11,10 +11,12 @@ import {
   Card,
   CardHeader,
   CardTitle,
+  CardDescription,
   CardFooter,
 } from "#/components/ui/card";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
+import { Textarea } from "#/components/ui/textarea";
 
 export const Route = createFileRoute("/admin/categorias")({
   component: CategoriasPage,
@@ -80,6 +82,8 @@ function CategoriasPage() {
     }
   };
 
+  const sortedCategories = categories?.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
@@ -94,12 +98,20 @@ function CategoriasPage() {
           </Button>
         </div>
 
-        {/* Categories Grid */}
+        {/* Categorías Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories?.map((category: any) => (
+          {sortedCategories?.map((category: any) => (
             <Card key={category._id}>
               <CardHeader>
                 <CardTitle>{category.name}</CardTitle>
+                <CardDescription>{category.description}</CardDescription>
+                {category.order !== undefined && (
+                  <div className="mt-2">
+                    <span className="text-xs px-2 py-1 bg-accent rounded-full tracking-wide">
+                      Orden: {category.order}
+                    </span>
+                  </div>
+                )}
               </CardHeader>
               <CardFooter className="flex gap-2 justify-between">
                 <Button
@@ -123,7 +135,7 @@ function CategoriasPage() {
           ))}
         </div>
 
-        {categories?.length === 0 && (
+        {sortedCategories?.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground tracking-wide">
               No hay categorías creadas aún
@@ -135,7 +147,7 @@ function CategoriasPage() {
       {/* Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-card rounded-lg border border-border max-w-md w-full p-6">
+          <div className="bg-card rounded-lg border border-border max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold tracking-widest mb-6 font-italianno">
               {editingCategory ? "Editar categoría" : "Nueva categoría"}
             </h2>
@@ -163,6 +175,8 @@ function CategoryForm({
   const form = useForm({
     defaultValues: {
       name: category?.name || "",
+      description: category?.description || "",
+      order: category?.order || 0,
     },
     onSubmit: async ({ value }) => {
       await onSave(value);
@@ -204,6 +218,50 @@ function CategoryForm({
         )}
       </form.Field>
 
+      <form.Field name="description">
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor="description">Descripción (opcional)</Label>
+            <Textarea
+              id="description"
+              name={field.name}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="order"
+        validators={{
+          onChange: ({ value }) =>
+            value === "" || Number(value) < 0
+              ? "El orden debe ser un número positivo"
+              : undefined,
+        }}
+      >
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor="order">Orden</Label>
+            <Input
+              id="order"
+              name={field.name}
+              type="number"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(Number(e.target.value))}
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
       <form.Subscribe
         selector={(state) => [state.canSubmit, state.isSubmitting]}
       >
@@ -223,11 +281,7 @@ function CategoryForm({
               disabled={!canSubmit || isSubmitting}
               className="flex-1"
             >
-              {isSubmitting
-                ? "Guardando..."
-                : category
-                  ? "Actualizar"
-                  : "Crear"}
+              {isSubmitting ? "Guardando..." : category ? "Actualizar" : "Crear"}
             </Button>
           </div>
         )}

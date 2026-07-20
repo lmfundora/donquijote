@@ -15,7 +15,6 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SectionSlugRouteImport } from './routes/section.$slug'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
@@ -55,11 +54,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
 } as any)
 const SectionSlugRoute = SectionSlugRouteImport.update({
   id: '/section/$slug',
@@ -120,7 +114,6 @@ export interface FileRoutesByFullPath {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
   '/section/$slug': typeof SectionSlugRoute
-  '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -128,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -137,7 +131,6 @@ export interface FileRoutesByTo {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
   '/section/$slug': typeof SectionSlugRoute
-  '/admin': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -156,7 +149,6 @@ export interface FileRoutesById {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
   '/section/$slug': typeof SectionSlugRoute
-  '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -176,7 +168,6 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/convex'
     | '/section/$slug'
-    | '/admin/'
     | '/api/auth/$'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -184,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/home'
     | '/login'
     | '/register'
@@ -193,7 +185,6 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/convex'
     | '/section/$slug'
-    | '/admin'
     | '/api/auth/$'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -211,7 +202,6 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/convex'
     | '/section/$slug'
-    | '/admin/'
     | '/api/auth/$'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -275,13 +265,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/section/$slug': {
       id: '/section/$slug'
@@ -353,14 +336,12 @@ interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminProductosRoute: typeof AdminProductosRoute
   AdminSeccionesRoute: typeof AdminSeccionesRoute
-  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminProductosRoute: AdminProductosRoute,
   AdminSeccionesRoute: AdminSeccionesRoute,
-  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

@@ -3,10 +3,9 @@ import { useState } from "react";
 import { authClient } from "#/lib/auth-client";
 import { useConvexMutation, useConvexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
-import { Plus, Edit, Trash2, Upload, X } from "lucide-react";
+import { Plus, Edit, Trash2, X } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { optimizeImage } from "#/lib/image-utils";
 import { Button } from "#/components/ui/button";
 import {
   Card,
@@ -18,7 +17,6 @@ import {
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Textarea } from "#/components/ui/textarea";
-import { Switch } from "#/components/ui/switch";
 
 export const Route = createFileRoute("/admin/secciones")({
   component: SeccionesPage,
@@ -34,7 +32,6 @@ function SeccionesPage() {
   const createSection = useConvexMutation(api.sections.create);
   const updateSection = useConvexMutation(api.sections.update);
   const removeSection = useConvexMutation(api.sections.remove);
-  const generateUploadUrl = useConvexMutation(api.sections.generateUploadUrl);
 
   if (isPending) {
     return (
@@ -85,6 +82,8 @@ function SeccionesPage() {
     }
   };
 
+  const sortedSections = sections?.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
@@ -99,35 +98,19 @@ function SeccionesPage() {
           </Button>
         </div>
 
-        {/* Sections Grid */}
+        {/* Secciones Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sections?.map((section: any) => (
-            <Card key={section._id} className="pt-0">
-              {section.imageUrl && (
-                <div className="aspect-video overflow-hidden mb-4 bg-muted">
-                  <img
-                    src={section.imageUrl}
-                    alt={section.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+          {sortedSections?.map((section: any) => (
+            <Card key={section._id}>
               <CardHeader>
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <CardTitle className="text-lg leading-tight">{section.name}</CardTitle>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0 ${
-                    section.showOnLanding !== false 
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" 
-                      : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                  }`}>
-                    {section.showOnLanding !== false ? "En Landing" : "Oculto"}
-                  </span>
-                </div>
-                <CardDescription className="line-clamp-2">{section.description}</CardDescription>
-                {section.slug && (
-                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted px-2 py-0.5 rounded-sm inline-block w-fit">
-                    /{section.slug}
-                  </p>
+                <CardTitle>{section.name}</CardTitle>
+                <CardDescription>{section.description}</CardDescription>
+                {section.order !== undefined && (
+                  <div className="mt-2">
+                    <span className="text-xs px-2 py-1 bg-accent rounded-full tracking-wide">
+                      Orden: {section.order}
+                    </span>
+                  </div>
                 )}
               </CardHeader>
               <CardFooter className="flex gap-2 justify-between">
@@ -152,7 +135,7 @@ function SeccionesPage() {
           ))}
         </div>
 
-        {sections?.length === 0 && (
+        {sortedSections?.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground tracking-wide">
               No hay secciones creadas aún
@@ -164,7 +147,7 @@ function SeccionesPage() {
       {/* Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-card rounded-lg border border-border max-w-md w-full p-6">
+          <div className="bg-card rounded-lg border border-border max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold tracking-widest mb-6 font-italianno">
               {editingSection ? "Editar sección" : "Nueva sección"}
             </h2>
@@ -172,7 +155,6 @@ function SeccionesPage() {
               section={editingSection}
               onClose={handleFormClose}
               onSave={handleSave}
-              generateUploadUrl={generateUploadUrl}
             />
           </div>
         </div>
@@ -185,98 +167,21 @@ function SectionForm({
   section,
   onClose,
   onSave,
-  generateUploadUrl,
 }: {
   section: any;
   onClose: () => void;
   onSave: (data: any) => Promise<void>;
-  generateUploadUrl: any;
 }) {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    section?.imageUrl || null,
-  );
-  const [isUploading, setIsUploading] = useState(false);
-
-  const slugify = (text: string) => {
-    return text
-      .toString()
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Remove accents
-      .replace(/\s+/g, "-") // Replace spaces with -
-      .replace(/[^\w\-]+/g, "") // Remove all non-word chars
-      .replace(/\-\-+/g, "-") // Replace multiple - with single -
-      .replace(/^-+/, "") // Trim - from start
-      .replace(/-+$/, ""); // Trim - from end
-  };
-
   const form = useForm({
     defaultValues: {
       name: section?.name || "",
       description: section?.description || "",
-      imageUrl: section?.imageUrl || "",
       order: section?.order || 0,
-      slug: section?.slug || "",
-      showOnLanding: section?.showOnLanding !== false,
     },
     onSubmit: async ({ value }) => {
-      let imageUrl = value.imageUrl;
-
-      if (imageFile) {
-        setIsUploading(true);
-        try {
-          const optimizedImage = await optimizeImage(imageFile, {
-            maxWidth: 1200,
-            quality: 0.8,
-            format: "webp",
-          });
-
-          const uploadUrl = await generateUploadUrl({});
-          const response = await fetch(uploadUrl, {
-            method: "POST",
-            headers: { "Content-Type": optimizedImage.type },
-            body: optimizedImage,
-          });
-
-          if (!response.ok) throw new Error("Error al subir imagen");
-
-          const { storageId } = await response.json();
-          imageUrl = storageId;
-
-          toast.success("Imagen subida correctamente");
-        } catch (error) {
-          toast.error("Error al procesar la imagen");
-          console.error(error);
-          return;
-        } finally {
-          setIsUploading(false);
-        }
-      }
-
-      await onSave({ ...value, imageUrl });
+      await onSave(value);
     },
   });
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-
-      // Mostrar preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    form.setFieldValue("imageUrl", "");
-  };
 
   return (
     <form
@@ -302,45 +207,7 @@ function SectionForm({
               name={field.name}
               value={field.state.value}
               onBlur={field.handleBlur}
-              onChange={(e) => {
-                const val = e.target.value;
-                field.handleChange(val);
-                if (!section) {
-                  form.setFieldValue("slug", slugify(val));
-                }
-              }}
-            />
-            {field.state.meta.errors.length > 0 && (
-              <p className="text-sm text-destructive">
-                {field.state.meta.errors[0]}
-              </p>
-            )}
-          </div>
-        )}
-      </form.Field>
-
-      <form.Field
-        name="slug"
-        validators={{
-          onChange: ({ value }) => {
-            if (!value) return "La URL/Slug es requerida";
-            if (!/^[a-z0-9-]+$/.test(value)) {
-              return "La URL solo debe contener letras minúsculas, números y guiones (ej. mi-seccion)";
-            }
-            return undefined;
-          },
-        }}
-      >
-        {(field) => (
-          <div className="space-y-2">
-            <Label htmlFor="slug">URL / Slug de la Sección</Label>
-            <Input
-              id="slug"
-              name={field.name}
-              value={field.state.value}
-              onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
-              placeholder="ej. bar-quijote"
             />
             {field.state.meta.errors.length > 0 && (
               <p className="text-sm text-destructive">
@@ -351,34 +218,10 @@ function SectionForm({
         )}
       </form.Field>
 
-      <form.Field name="showOnLanding">
-        {(field) => (
-          <div className="flex items-center justify-between rounded-lg border border-border p-3">
-            <div className="space-y-0.5">
-              <Label htmlFor="showOnLanding">Mostrar en Landing</Label>
-              <p className="text-xs text-muted-foreground">
-                Si está activo, la sección se mostrará en el menú principal.
-              </p>
-            </div>
-            <Switch
-              id="showOnLanding"
-              checked={field.state.value}
-              onCheckedChange={(checked) => field.handleChange(checked)}
-            />
-          </div>
-        )}
-      </form.Field>
-
-      <form.Field
-        name="description"
-        validators={{
-          onChange: ({ value }) =>
-            !value ? "La descripción es requerida" : undefined,
-        }}
-      >
+      <form.Field name="description">
         {(field) => (
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción</Label>
+            <Label htmlFor="description">Descripción (opcional)</Label>
             <Textarea
               id="description"
               name={field.name}
@@ -386,68 +229,19 @@ function SectionForm({
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
             />
-            {field.state.meta.errors.length > 0 && (
-              <p className="text-sm text-destructive">
-                {field.state.meta.errors[0]}
-              </p>
-            )}
           </div>
         )}
       </form.Field>
 
-      <form.Field name="imageUrl">
-        {() => (
-          <div className="space-y-2">
-            <label
-              htmlFor="imageUrl"
-              className="text-sm font-medium tracking-wide font-sans"
-            >
-              Imagen
-            </label>
-
-            {imagePreview ? (
-              <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute top-2 right-2 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-border rounded-lg p-6">
-                <label
-                  htmlFor="image-upload"
-                  className="flex flex-col items-center justify-center cursor-pointer"
-                >
-                  <Upload size={32} className="text-muted-foreground mb-2" />
-                  <span className="text-sm text-muted-foreground tracking-wide font-sans">
-                    Click para subir imagen
-                  </span>
-                  <span className="text-xs text-muted-foreground mt-1">
-                    PNG, JPG, WebP (máx. 5MB)
-                  </span>
-                </label>
-                <input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </form.Field>
-
-      <form.Field name="order">
+      <form.Field
+        name="order"
+        validators={{
+          onChange: ({ value }) =>
+            value === "" || Number(value) < 0
+              ? "El orden debe ser un número positivo"
+              : undefined,
+        }}
+      >
         {(field) => (
           <div className="space-y-2">
             <Label htmlFor="order">Orden</Label>
@@ -459,6 +253,11 @@ function SectionForm({
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(Number(e.target.value))}
             />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
           </div>
         )}
       </form.Field>
@@ -472,23 +271,17 @@ function SectionForm({
               type="button"
               variant="outline"
               onClick={onClose}
-              disabled={isUploading}
+              disabled={isSubmitting}
               className="flex-1"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
-              disabled={!canSubmit || isSubmitting || isUploading}
+              disabled={!canSubmit || isSubmitting}
               className="flex-1"
             >
-              {isUploading
-                ? "Subiendo imagen..."
-                : isSubmitting
-                  ? "Guardando..."
-                  : section
-                    ? "Actualizar"
-                    : "Crear"}
+              {isSubmitting ? "Guardando..." : section ? "Actualizar" : "Crear"}
             </Button>
           </div>
         )}

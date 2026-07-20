@@ -1,7 +1,7 @@
-import { createFileRoute, useRouter, Link, Outlet } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useRouter, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { authClient } from "#/lib/auth-client";
-import { Menu, X, Home, Users, Folder, Package, Settings, LogOut } from "lucide-react";
+import { Menu, X, Users, Folder, Package, LogOut } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -11,6 +11,11 @@ function AdminPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate({ to: "/admin/productos", replace: true });
+  }, [navigate]);
 
   if (isPending) {
     return (
@@ -26,11 +31,9 @@ function AdminPage() {
   }
 
   const menuItems = [
-    { icon: Home, label: "Dashboard", href: "/admin" },
     { icon: Users, label: "Secciones", href: "/admin/secciones" },
     { icon: Folder, label: "Categorías", href: "/admin/categorias" },
     { icon: Package, label: "Productos", href: "/admin/productos" },
-    { icon: Settings, label: "Configuración", href: "/admin/configuracion" },
   ];
 
   const handleLogout = async () => {
@@ -67,6 +70,14 @@ function AdminPage() {
         </div>
       </header>
 
+      {/* Backdrop overlay for mobile */}
+      {drawerOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+
       {/* Drawer */}
       <div
         className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-background border-r border-border transition-transform duration-300 ease-in-out z-40 ${
@@ -79,6 +90,7 @@ function AdminPage() {
               key={item.href}
               to={item.href}
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent transition-colors text-foreground tracking-wide"
+              onClick={() => setDrawerOpen(false)}
             >
               <item.icon size={20} />
               <span className="font-sans">{item.label}</span>
@@ -88,7 +100,7 @@ function AdminPage() {
       </div>
 
       {/* Main Content */}
-      <main className="pt-16 transition-all duration-300" style={{ marginLeft: drawerOpen ? '16rem' : '0' }}>
+      <main className={`pt-16 transition-all duration-300 ${drawerOpen ? "lg:ml-64" : ""}`}>
         <Outlet />
       </main>
     </div>
