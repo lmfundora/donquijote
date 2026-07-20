@@ -30,7 +30,7 @@
     --kicker: rgba(47, 106, 74, 0.9);
     --bg-base: #fff6ef;
     /* <-- Cambiado de #e7f3ec */
-    --background: oklch(0.975 0.012 85);
+    --background: oklch(98% 0.016 73.684);
     /* <-- Color crema en oklch */
     --header-bg: rgba(251, 255, 248, 0.84);
     --chip-bg: rgba(255, 255, 255, 0.8);
@@ -40,7 +40,7 @@
     --hero-b: rgba(47, 106, 74, 0.2);
     --text-dark: #1e1e1e;
 
-    --background: oklch(1 0 0);
+    --background: oklch(98% 0.016 73.684);
     --foreground: oklch(0.147 0.004 49.3);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.147 0.004 49.3);
@@ -355,7 +355,7 @@ body.scrolled .white-panel {
 
 .vignette-container {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     border-radius: 12px;
 }
 
@@ -364,34 +364,31 @@ body.scrolled .white-panel {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: 12px;
     pointer-events: none;
     z-index: 4;
     /* Shadow 4: exact values from reference */
     box-shadow:
         /* Inner shadow 1: white highlight from top-left (Blur:43, X/Y:-31, 64% #FFFFFF) */
-        inset -31px -31px 43px rgba(13, 39, 80, 0.56),
+        inset -15px -15px 33px rgba(13, 39, 80, 0.8),
         /* Inner shadow 2: dark depth from bottom-right (Blur:48, X/Y:26, 16% #0D2750) */
-        inset 26px 26px 48px rgba(255, 255, 255, 0.84);
+        inset 16px 16px 38px rgba(255, 255, 255, 0.9);
 }
 
 .vignette-blur {
     position: absolute;
-    inset: 0px;
-    width: calc(100% + 5px);
-    height: calc(100% + 5px);
+    width: calc(100% + 24px);
+    height: calc(100% + 24px);
     object-fit: cover;
-    filter: blur(17px) brightness(1.15) saturate(1.2);
-    opacity: 0.3;
+    filter: blur(20px) brightness(1.15) saturate(1.3);
+    opacity: 0.35;
     z-index: -1;
-    border-radius: 12px;
+    border-radius: 18px;
 }
 
 .vignette-container img:not(.vignette-blur) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 4px;
     position: relative;
     z-index: 1;
 }

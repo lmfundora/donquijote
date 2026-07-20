@@ -16,7 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as HomeSlugRouteImport } from './routes/home.$slug'
+import { Route as SectionSlugRouteImport } from './routes/section.$slug'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as AdminSeccionesRouteImport } from './routes/admin.secciones'
@@ -61,10 +61,10 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const HomeSlugRoute = HomeSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => HomeRoute,
+const SectionSlugRoute = SectionSlugRouteImport.update({
+  id: '/section/$slug',
+  path: '/section/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DemoConvexRoute = DemoConvexRouteImport.update({
   id: '/demo/convex',
@@ -111,7 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/home': typeof HomeRouteWithChildren
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -119,7 +119,7 @@ export interface FileRoutesByFullPath {
   '/admin/secciones': typeof AdminSeccionesRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
-  '/home/$slug': typeof HomeSlugRoute
+  '/section/$slug': typeof SectionSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -128,7 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/home': typeof HomeRouteWithChildren
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -136,7 +136,7 @@ export interface FileRoutesByTo {
   '/admin/secciones': typeof AdminSeccionesRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
-  '/home/$slug': typeof HomeSlugRoute
+  '/section/$slug': typeof SectionSlugRoute
   '/admin': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -147,7 +147,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/home': typeof HomeRouteWithChildren
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -155,7 +155,7 @@ export interface FileRoutesById {
   '/admin/secciones': typeof AdminSeccionesRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
-  '/home/$slug': typeof HomeSlugRoute
+  '/section/$slug': typeof SectionSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -175,7 +175,7 @@ export interface FileRouteTypes {
     | '/admin/secciones'
     | '/demo/better-auth'
     | '/demo/convex'
-    | '/home/$slug'
+    | '/section/$slug'
     | '/admin/'
     | '/api/auth/$'
     | '/demo/form/address'
@@ -192,7 +192,7 @@ export interface FileRouteTypes {
     | '/admin/secciones'
     | '/demo/better-auth'
     | '/demo/convex'
-    | '/home/$slug'
+    | '/section/$slug'
     | '/admin'
     | '/api/auth/$'
     | '/demo/form/address'
@@ -210,7 +210,7 @@ export interface FileRouteTypes {
     | '/admin/secciones'
     | '/demo/better-auth'
     | '/demo/convex'
-    | '/home/$slug'
+    | '/section/$slug'
     | '/admin/'
     | '/api/auth/$'
     | '/demo/form/address'
@@ -221,11 +221,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
-  HomeRoute: typeof HomeRouteWithChildren
+  HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoConvexRoute: typeof DemoConvexRoute
+  SectionSlugRoute: typeof SectionSlugRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
@@ -282,12 +283,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/home/$slug': {
-      id: '/home/$slug'
-      path: '/$slug'
-      fullPath: '/home/$slug'
-      preLoaderRoute: typeof HomeSlugRouteImport
-      parentRoute: typeof HomeRoute
+    '/section/$slug': {
+      id: '/section/$slug'
+      path: '/section/$slug'
+      fullPath: '/section/$slug'
+      preLoaderRoute: typeof SectionSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/demo/convex': {
       id: '/demo/convex'
@@ -364,25 +365,16 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface HomeRouteChildren {
-  HomeSlugRoute: typeof HomeSlugRoute
-}
-
-const HomeRouteChildren: HomeRouteChildren = {
-  HomeSlugRoute: HomeSlugRoute,
-}
-
-const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
-  HomeRoute: HomeRouteWithChildren,
+  HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoConvexRoute: DemoConvexRoute,
+  SectionSlugRoute: SectionSlugRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
