@@ -413,6 +413,7 @@ function ProductForm({
       categoryId: product?.categoryId || "",
       sectionId: product?.sectionId || "",
       allergens: product?.allergens || [],
+      slug: product?.slug || "",
     },
     onSubmit: async ({ value }) => {
       let imageUrl = value.imageUrl;
@@ -448,7 +449,15 @@ function ProductForm({
         }
       }
 
-      await onSave({ ...value, imageUrl, allergens: allergensList });
+      // Generar slug si no está definido
+      const slug = value.slug || value.name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+      await onSave({ ...value, imageUrl, allergens: allergensList, slug });
     },
   });
 
@@ -517,6 +526,25 @@ function ProductForm({
                 {field.state.meta.errors[0]}
               </p>
             )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="slug">
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor="slug">Slug (URL amigable)</Label>
+            <Input
+              id="slug"
+              name={field.name}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              placeholder="se-deja-vacio-para-autogenerar"
+            />
+            <p className="text-xs text-muted-foreground">
+              Si se deja vacío, se generará automáticamente desde el nombre
+            </p>
           </div>
         )}
       </form.Field>

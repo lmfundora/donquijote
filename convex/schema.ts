@@ -25,5 +25,8 @@ export default defineSchema({
     categoryId: v.optional(v.id("categories")),
     sectionId: v.id("sections"),
     allergens: v.optional(v.array(v.string())),
-  }).index("by_section", ["sectionId"]),
+    preparation: v.optional(v.string()),
+    ingredients: v.optional(v.array(v.string())),
+    slug: v.optional(v.string()),
+  }).index("by_section", ["sectionId"]).index("by_slug", ["slug"]),
 });

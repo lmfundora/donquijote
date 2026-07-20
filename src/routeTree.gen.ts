@@ -16,6 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SectionSlugRouteImport } from './routes/section.$slug'
+import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as AdminSeccionesRouteImport } from './routes/admin.secciones'
@@ -58,6 +59,11 @@ const IndexRoute = IndexRouteImport.update({
 const SectionSlugRoute = SectionSlugRouteImport.update({
   id: '/section/$slug',
   path: '/section/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductSlugRoute = ProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoConvexRoute = DemoConvexRouteImport.update({
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/admin/secciones': typeof AdminSeccionesRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/section/$slug': typeof SectionSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/admin/secciones': typeof AdminSeccionesRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/section/$slug': typeof SectionSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/admin/secciones': typeof AdminSeccionesRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/convex': typeof DemoConvexRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/section/$slug': typeof SectionSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/admin/secciones'
     | '/demo/better-auth'
     | '/demo/convex'
+    | '/product/$slug'
     | '/section/$slug'
     | '/api/auth/$'
     | '/demo/form/address'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/admin/secciones'
     | '/demo/better-auth'
     | '/demo/convex'
+    | '/product/$slug'
     | '/section/$slug'
     | '/api/auth/$'
     | '/demo/form/address'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/admin/secciones'
     | '/demo/better-auth'
     | '/demo/convex'
+    | '/product/$slug'
     | '/section/$slug'
     | '/api/auth/$'
     | '/demo/form/address'
@@ -216,6 +228,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoConvexRoute: typeof DemoConvexRoute
+  ProductSlugRoute: typeof ProductSlugRoute
   SectionSlugRoute: typeof SectionSlugRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/section/$slug'
       fullPath: '/section/$slug'
       preLoaderRoute: typeof SectionSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/convex': {
@@ -355,6 +375,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoConvexRoute: DemoConvexRoute,
+  ProductSlugRoute: ProductSlugRoute,
   SectionSlugRoute: SectionSlugRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,

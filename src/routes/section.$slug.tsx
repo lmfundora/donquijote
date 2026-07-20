@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { api } from "../../convex/_generated/api";
 import { Separator } from "#/components/ui/separator";
 
@@ -145,9 +145,10 @@ function SectionContent({ products, categories }: any) {
               <div key={categoryId} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {categoryProducts.map((product: any) => (
-                    <div
+                    <Link
                       key={product._id}
-                      className="flex bg-white border border-[#4A2E1B] overflow-hidden shadow-sm aspect-[1.5/1]"
+                      to={product.slug ? `/product/${product.slug}` : "#"}
+                      className="flex bg-white border border-[#4A2E1B] overflow-hidden shadow-sm aspect-[1.5/1] hover:shadow-md transition-shadow cursor-pointer"
                     >
                       {/* Izquierda: Imagen (50%) */}
                       <div className="w-1/2 relative bg-stone-100 border-r border-[#4A2E1B]/10">
@@ -182,11 +183,11 @@ function SectionContent({ products, categories }: any) {
                         <div className="flex items-center justify-end gap-2 mt-2">
                           <div className="flex-grow border-b border-[#4A2E1B]/20 mb-1" />
                           <span className="font-italianno text-2xl md:text-3xl text-[#4A2E1B] font-medium pl-1">
-                            {product.price}
+                            ${product.price.toFixed(2)}
                           </span>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
