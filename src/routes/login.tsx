@@ -1,5 +1,4 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
 import { authClient } from "#/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
@@ -19,61 +18,26 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
-  const [isSignUp] = useState(false);
 
   const form = useForm({
     defaultValues: {
       email: "",
       password: "",
-      name: "",
     },
     onSubmit: async ({ value }) => {
-      try {
-        if (isSignUp) {
-          const result = await authClient.signUp.email({
-            email: value.email,
-            password: value.password,
-            name: value.name,
-          });
-          if (result.error) {
-            toast.error(result.error.message || "Error al crear cuenta");
-          } else {
-            toast.success("Cuenta creada exitosamente");
-            router.navigate({ to: "/admin" });
-          }
-        } else {
-          const result = await authClient.signIn.email({
-            email: value.email,
-            password: value.password,
-          });
-          if (result.error) {
-            toast.error(result.error.message || "Error al iniciar sesión");
-          } else {
-            toast.success("Sesión iniciada correctamente");
-            router.navigate({ to: "/admin" });
-          }
-        }
-      } catch (err) {
-        toast.error("Ocurrió un error inesperado");
+      const result = await authClient.signIn.email({
+        email: value.email,
+        password: value.password,
+      });
+      if (result.error) {
+        toast.error(result.error.message || "Error al iniciar sesión");
+      } else {
+        toast.success("Sesión iniciada correctamente");
+        router.navigate({ to: "/admin" });
       }
     },
   });
-
-  if (isPending) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-background">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-800 dark:border-t-neutral-100" />
-      </main>
-    );
-  }
-
-  if (session?.user) {
-    router.navigate({ to: "/admin" });
-    return null;
-  }
-
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
@@ -92,34 +56,6 @@ function LoginPage() {
             }}
             className="grid gap-4"
           >
-            {isSignUp && (
-              <form.Field
-                name="name"
-                validators={{
-                  onBlur: ({ value }) =>
-                    !value ? "El nombre es requerido" : undefined,
-                }}
-              >
-                {(field) => (
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Nombre</Label>
-                    <Input
-                      id="name"
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                    {field.state.meta.errors.length > 0 && (
-                      <p className="text-sm text-destructive">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </form.Field>
-            )}
-
             <form.Field
               name="email"
               validators={{
@@ -198,8 +134,6 @@ function LoginPage() {
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-400 border-t-white dark:border-neutral-600 dark:border-t-neutral-900" />
                       <span>Por favor espera</span>
                     </span>
-                  ) : isSignUp ? (
-                    "Crear cuenta"
                   ) : (
                     "Iniciar sesión"
                   )}

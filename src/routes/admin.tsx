@@ -1,44 +1,63 @@
-import { createFileRoute, useRouter, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useNavigate,
+  Link,
+} from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import { authClient } from "#/lib/auth-client";
 import { Menu, X, Users, Folder, Package, LogOut } from "lucide-react";
+import { fetchAuthQuery } from "#/lib/auth-server";
+import { api } from "../../convex/_generated/api";
 
+export const getSessionFn = createServerFn({ method: "GET" }).handler(
+  async () => {
+    // Obtener el usuario autenticado desde Convex usando la utilidad server de @convex-dev/better-auth
+    const user = await fetchAuthQuery(api.auth.getCurrentUser, {});
+    return user;
+  },
+);
+
+// 2. Definición de la Ruta con beforeLoad
 export const Route = createFileRoute("/admin")({
-  component: AdminPage,
+  beforeLoad: async () => {
+    // Verificamos si existe sesión usando la consulta autenticada a Convex
+    const user = await getSessionFn();
+
+    if (!user) {
+      throw redirect({
+        to: "/login",
+      });
+    }
+
+    return { user };
+  },
+  component: AdminLayout,
 });
 
-function AdminPage() {
+// 3. Componente de la Vista / Layout en el mismo archivo
+function AdminLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { data: session, isPending } = authClient.useSession();
-  const router = useRouter();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    navigate({ to: "/admin/productos", replace: true });
-  }, [navigate]);
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-800 dark:border-t-neutral-100" />
-      </div>
-    );
-  }
-
-  if (!session?.user) {
-    router.navigate({ to: "/login" });
-    return null;
-  }
+  // Obtenemos la sesión inyectada por el beforeLoad mediante el contexto de la ruta
+  const { user } = Route.useRouteContext();
 
   const menuItems = [
+    { icon: Package, label: "Productos", href: "/admin" },
     { icon: Users, label: "Secciones", href: "/admin/secciones" },
     { icon: Folder, label: "Categorías", href: "/admin/categorias" },
-    { icon: Package, label: "Productos", href: "/admin/productos" },
   ];
 
   const handleLogout = async () => {
-    await authClient.signOut();
-    router.navigate({ to: "/login" });
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = "/login";
+        },
+      },
+    });
   };
 
   return (
@@ -58,7 +77,7 @@ function AdminPage() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground tracking-wide">
-            {session.user.name || session.user.email}
+            {user.email}
           </span>
           <button
             onClick={handleLogout}
@@ -70,7 +89,7 @@ function AdminPage() {
         </div>
       </header>
 
-      {/* Backdrop overlay for mobile */}
+      {/* Backdrop overlay para móvil */}
       {drawerOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-30 lg:hidden"
@@ -90,6 +109,7 @@ function AdminPage() {
               key={item.href}
               to={item.href}
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent transition-colors text-foreground tracking-wide"
+              activeProps={{ className: "bg-accent font-semibold" }}
               onClick={() => setDrawerOpen(false)}
             >
               <item.icon size={20} />
@@ -100,7 +120,11 @@ function AdminPage() {
       </div>
 
       {/* Main Content */}
-      <main className={`pt-16 transition-all duration-300 ${drawerOpen ? "lg:ml-64" : ""}`}>
+      <main
+        className={`pt-16 transition-all duration-300 ${
+          drawerOpen ? "lg:ml-64" : ""
+        }`}
+      >
         <Outlet />
       </main>
     </div>

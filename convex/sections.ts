@@ -4,7 +4,7 @@ import { mutation, query } from "./_generated/server";
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const sections = await ctx.db.query("sections").order("asc").collect();
+    const sections = await ctx.db.query("sections").withIndex("by_order").collect();
     return await Promise.all(
       sections.map(async (section) => {
         if (!section.imageUrl) return section;

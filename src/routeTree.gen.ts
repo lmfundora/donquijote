@@ -15,16 +15,12 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
-import { Route as AdminProductosRouteImport } from './routes/admin.productos'
 import { Route as AdminSeccionesRouteImport } from './routes/admin.secciones'
-import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
-import { Route as DemoConvexRouteImport } from './routes/demo/convex'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as SectionSlugRouteImport } from './routes/section.$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
-import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -56,30 +52,20 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProductosRoute = AdminProductosRouteImport.update({
-  id: '/productos',
-  path: '/productos',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSeccionesRoute = AdminSeccionesRouteImport.update({
   id: '/secciones',
   path: '/secciones',
   getParentRoute: () => AdminRoute,
-} as any)
-const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
-  id: '/demo/better-auth',
-  path: '/demo/better-auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoConvexRoute = DemoConvexRouteImport.update({
-  id: '/demo/convex',
-  path: '/demo/convex',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
   id: '/product/$slug',
@@ -96,16 +82,6 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
-  id: '/demo/form/address',
-  path: '/demo/form/address',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoFormSimpleRoute = DemoFormSimpleRouteImport.update({
-  id: '/demo/form/simple',
-  path: '/demo/form/simple',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,33 +91,24 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
-  '/admin/productos': typeof AdminProductosRoute
   '/admin/secciones': typeof AdminSeccionesRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/convex': typeof DemoConvexRoute
   '/product/$slug': typeof ProductSlugRoute
   '/section/$slug': typeof SectionSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
-  '/admin/productos': typeof AdminProductosRoute
   '/admin/secciones': typeof AdminSeccionesRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/convex': typeof DemoConvexRoute
   '/product/$slug': typeof ProductSlugRoute
   '/section/$slug': typeof SectionSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,15 +119,11 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
-  '/admin/productos': typeof AdminProductosRoute
   '/admin/secciones': typeof AdminSeccionesRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/convex': typeof DemoConvexRoute
   '/product/$slug': typeof ProductSlugRoute
   '/section/$slug': typeof SectionSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -172,33 +135,24 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/admin/categorias'
-    | '/admin/productos'
     | '/admin/secciones'
-    | '/demo/better-auth'
-    | '/demo/convex'
     | '/product/$slug'
     | '/section/$slug'
+    | '/admin/'
     | '/api/auth/$'
-    | '/demo/form/address'
-    | '/demo/form/simple'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/admin'
     | '/home'
     | '/login'
     | '/register'
     | '/admin/categorias'
-    | '/admin/productos'
     | '/admin/secciones'
-    | '/demo/better-auth'
-    | '/demo/convex'
     | '/product/$slug'
     | '/section/$slug'
+    | '/admin'
     | '/api/auth/$'
-    | '/demo/form/address'
-    | '/demo/form/simple'
   id:
     | '__root__'
     | '/'
@@ -208,15 +162,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/admin/categorias'
-    | '/admin/productos'
     | '/admin/secciones'
-    | '/demo/better-auth'
-    | '/demo/convex'
     | '/product/$slug'
     | '/section/$slug'
+    | '/admin/'
     | '/api/auth/$'
-    | '/demo/form/address'
-    | '/demo/form/simple'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -226,13 +176,9 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
-  DemoBetterAuthRoute: typeof DemoBetterAuthRoute
-  DemoConvexRoute: typeof DemoConvexRoute
   ProductSlugRoute: typeof ProductSlugRoute
   SectionSlugRoute: typeof SectionSlugRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  DemoFormAddressRoute: typeof DemoFormAddressRoute
-  DemoFormSimpleRoute: typeof DemoFormSimpleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -279,18 +225,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categorias': {
       id: '/admin/categorias'
       path: '/categorias'
       fullPath: '/admin/categorias'
       preLoaderRoute: typeof AdminCategoriasRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/productos': {
-      id: '/admin/productos'
-      path: '/productos'
-      fullPath: '/admin/productos'
-      preLoaderRoute: typeof AdminProductosRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/secciones': {
@@ -299,20 +245,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/secciones'
       preLoaderRoute: typeof AdminSeccionesRouteImport
       parentRoute: typeof AdminRoute
-    }
-    '/demo/better-auth': {
-      id: '/demo/better-auth'
-      path: '/demo/better-auth'
-      fullPath: '/demo/better-auth'
-      preLoaderRoute: typeof DemoBetterAuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/convex': {
-      id: '/demo/convex'
-      path: '/demo/convex'
-      fullPath: '/demo/convex'
-      preLoaderRoute: typeof DemoConvexRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/product/$slug': {
       id: '/product/$slug'
@@ -335,33 +267,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/form/address': {
-      id: '/demo/form/address'
-      path: '/demo/form/address'
-      fullPath: '/demo/form/address'
-      preLoaderRoute: typeof DemoFormAddressRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/form/simple': {
-      id: '/demo/form/simple'
-      path: '/demo/form/simple'
-      fullPath: '/demo/form/simple'
-      preLoaderRoute: typeof DemoFormSimpleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
-  AdminProductosRoute: typeof AdminProductosRoute
   AdminSeccionesRoute: typeof AdminSeccionesRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
-  AdminProductosRoute: AdminProductosRoute,
   AdminSeccionesRoute: AdminSeccionesRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -373,13 +291,9 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
-  DemoBetterAuthRoute: DemoBetterAuthRoute,
-  DemoConvexRoute: DemoConvexRoute,
   ProductSlugRoute: ProductSlugRoute,
   SectionSlugRoute: SectionSlugRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  DemoFormAddressRoute: DemoFormAddressRoute,
-  DemoFormSimpleRoute: DemoFormSimpleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -7,7 +7,7 @@ import { query } from "./_generated/server";
 import type { GenericCtx } from "@convex-dev/better-auth";
 import type { DataModel } from "./_generated/dataModel";
 
-const siteUrl = "http://localhost:3000";
+const siteUrl = process.env.SITE_URL!;
 
 // The component client has methods needed for integrating Convex with Better Auth,
 // as well as helper methods for general use.
@@ -37,3 +37,4 @@ export const getCurrentUser = query({
     return await authComponent.getAuthUser(ctx);
   },
 });
+

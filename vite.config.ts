@@ -7,11 +7,16 @@ import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin";
 
+import "./src/env";
+
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
-    nitroV2Plugin({ preset: "vercel", rollupConfig: { external: [/^@sentry\//] } }),
+    nitroV2Plugin({
+      preset: "vercel",
+      rollupConfig: { external: [/^@sentry\//] },
+    }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
