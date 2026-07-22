@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
+import { type Doc } from "../../convex/_generated/dataModel";
 import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Collapsible,
@@ -22,34 +25,53 @@ export const Route = createFileRoute("/product/$slug")({
     ],
   }),
   loader: async ({ params, context }) => {
-    const convexClient = context.convexQueryClient.convexClient;
+    // Cargar producto primero (sin procesar imagen en SSR)
+    await context.queryClient.ensureQueryData(
+      convexQuery(api.products.getBySlug, { slug: params.slug }),
+    );
 
-    const product = await convexClient.query(api.products.getBySlug, {
-      slug: params.slug,
-    });
+    // Obtener el producto para cargar datos dependientes
+    const product = await context.queryClient.fetchQuery(
+      convexQuery(api.products.getBySlug, { slug: params.slug }),
+    );
 
-    if (!product) {
-      return { product: null, section: null, category: null };
+    if (product) {
+      // Cargar sección y categoría usando los IDs del producto
+      await Promise.all([
+        context.queryClient.ensureQueryData(
+          convexQuery(api.sections.getById, {
+            id: product.sectionId,
+          }),
+        ),
+        product.categoryId
+          ? context.queryClient.ensureQueryData(
+              convexQuery(api.categories.getById, {
+                id: product.categoryId,
+              }),
+            )
+          : Promise.resolve(),
+      ]);
     }
-
-    const [section, category] = await Promise.all([
-      convexClient.query(api.sections.getById, {
-        id: product.sectionId,
-      }),
-      product.categoryId
-        ? convexClient.query(api.categories.getById, {
-            id: product.categoryId,
-          })
-        : Promise.resolve(null),
-    ]);
-
-    return { product, section, category };
   },
 });
 
 function ProductPage() {
-  const loaderData = Route.useLoaderData();
-  const { product, section } = loaderData;
+  const { slug } = Route.useParams();
+  const { data: product } = useSuspenseQuery(
+    convexQuery(api.products.getBySlug, { slug }),
+  );
+
+  const { data: section } = useQuery(
+    convexQuery(api.sections.getById, {
+      id: product?.sectionId as any,
+    }),
+  );
+
+  const { data: category } = useQuery(
+    convexQuery(api.categories.getById, {
+      id: product?.categoryId as any,
+    }),
+  );
 
   if (!product) {
     return (

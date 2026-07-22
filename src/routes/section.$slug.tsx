@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
 import { Separator } from "#/components/ui/separator";
 import { useState } from "react";
+import { type Doc } from "../../convex/_generated/dataModel";
 
 export const Route = createFileRoute("/section/$slug")({
   component: SectionPage,
@@ -17,30 +20,40 @@ export const Route = createFileRoute("/section/$slug")({
     ],
   }),
   loader: async ({ params, context }) => {
-    const convexClient = context.convexQueryClient.convexClient;
+    // Cargar sección primero
+    const section = await context.queryClient.fetchQuery(
+      convexQuery(api.sections.getBySlug, { slug: params.slug }),
+    );
 
-    const section = await convexClient.query(api.sections.getBySlug, {
-      slug: params.slug,
-    });
-
-    if (!section) {
-      return { section: null, products: [], categories: [] };
+    if (section) {
+      // Cargar productos usando el sectionId
+      await context.queryClient.ensureQueryData(
+        convexQuery(api.products.listBySection, {
+          sectionId: section._id as any,
+        }),
+      );
     }
 
-    const [products, categories] = await Promise.all([
-      convexClient.query(api.products.listBySection, {
-        sectionId: section._id,
-      }),
-      convexClient.query(api.categories.list, {}),
-    ]);
-
-    return { section, products, categories };
+    // Cargar categorías en SSR (no dependen de la sección)
+    await context.queryClient.ensureQueryData(
+      convexQuery(api.categories.list, {}),
+    );
   },
 });
 
 function SectionPage() {
-  const loaderData = Route.useLoaderData();
-  const { section, products, categories } = loaderData;
+  const { slug } = Route.useParams();
+  const { data: section } = useSuspenseQuery(
+    convexQuery(api.sections.getBySlug, { slug }),
+  );
+
+  const { data: products } = useQuery(
+    convexQuery(api.products.listBySection, {
+      sectionId: section?._id as any,
+    }),
+  );
+
+  const { data: categories } = useQuery(convexQuery(api.categories.list, {}));
 
   return (
     <main className="min-h-screen bg-[#FAF4ED] text-[#332211]">
@@ -62,8 +75,8 @@ function SectionPage() {
           <div className="max-w-7xl mx-auto w-full pt-4 pb-16 px-4 md:px-6">
             <SectionContent
               section={section}
-              products={products}
-              categories={categories}
+              products={products || []}
+              categories={categories || []}
             />
           </div>
         </>
@@ -72,7 +85,7 @@ function SectionPage() {
   );
 }
 
-function SectionHeader({ section }: { section: any }) {
+function SectionHeader({ section }: { section: Doc<"sections"> }) {
   const defaultImageUrl =
     "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1200";
   const imageUrl = section.imageUrl || defaultImageUrl;
@@ -101,27 +114,43 @@ function SectionHeader({ section }: { section: any }) {
   );
 }
 
-function SectionContent({ products, categories }: any) {
+function SectionContent({
+  products,
+  categories,
+}: {
+  products: Doc<"products">[];
+  categories: Doc<"categories">[];
+}) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const productsByCategory =
-    products?.reduce((acc: any, product: any) => {
-      const categoryId = product.categoryId && product.categoryId !== "" ? product.categoryId : "uncategorized";
-      if (!acc[categoryId]) {
-        acc[categoryId] = [];
-      }
-      acc[categoryId].push(product);
-      return acc;
-    }, {}) || {};
+    products?.reduce(
+      (acc: Record<string, Doc<"products">[]>, product: Doc<"products">) => {
+        const categoryId =
+          product.categoryId && product.categoryId !== ""
+            ? product.categoryId
+            : "uncategorized";
+        if (!acc[categoryId]) {
+          acc[categoryId] = [];
+        }
+        acc[categoryId].push(product);
+        return acc;
+      },
+      {},
+    ) || {};
 
   const getCategoryName = (categoryId: string) => {
     if (categoryId === "uncategorized") return "Sin categoría";
-    const category = categories?.find((c: any) => c._id === categoryId);
+    const category = categories?.find(
+      (c: Doc<"categories">) => c._id === categoryId,
+    );
     return category?.name || "Sin categoría";
   };
 
   const filteredProducts = selectedCategory
-    ? products?.filter((product: any) => product.categoryId === selectedCategory)
+    ? products?.filter(
+        (product: Doc<"products">) => product.categoryId === selectedCategory,
+      )
     : products;
 
   return (
@@ -166,10 +195,14 @@ function SectionContent({ products, categories }: any) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product: any) => (
+          {filteredProducts.map((product: Doc<"products">) => (
             <Link
               key={product._id}
-              to={product.slug ? `/product/${product.slug}` : "#"}
+              to={
+                product.slug
+                  ? { to: "/product/$slug", params: { slug: product.slug } }
+                  : "#"
+              }
               className="flex bg-white border border-[#4A2E1B] overflow-hidden shadow-sm aspect-[1.5/1] hover:shadow-md transition-shadow cursor-pointer"
             >
               {/* Izquierda: Imagen (50%) */}

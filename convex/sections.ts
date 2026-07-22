@@ -8,18 +8,18 @@ export const list = query({
     return await Promise.all(
       sections.map(async (section) => {
         if (!section.imageUrl) return section;
-        
+
         // Extraer storageId si es una URL completa
-        const storageId = section.imageUrl.startsWith("http") 
+        const storageId = section.imageUrl.startsWith("http")
           ? section.imageUrl.split("/api/storage/")[1] || section.imageUrl
           : section.imageUrl;
-        
+
         try {
           const url = await ctx.storage.getUrl(storageId as any);
           return { ...section, imageUrl: url };
         } catch {
           // Si falla, devolver la sección sin imagen
-          return { ...section, imageUrl: null };
+          return { ...section, imageUrl: undefined };
         }
       })
     );
@@ -52,7 +52,7 @@ export const getBySlug = query({
       const url = await ctx.storage.getUrl(storageId as any);
       return { ...section, imageUrl: url };
     } catch {
-      return { ...section, imageUrl: null };
+      return { ...section, imageUrl: undefined };
     }
   },
 });

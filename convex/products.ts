@@ -8,18 +8,18 @@ export const list = query({
     return await Promise.all(
       products.map(async (product) => {
         if (!product.imageUrl) return product;
-        
+
         // Extraer storageId si es una URL completa
-        const storageId = product.imageUrl.startsWith("http") 
+        const storageId = product.imageUrl.startsWith("http")
           ? product.imageUrl.split("/api/storage/")[1] || product.imageUrl
           : product.imageUrl;
-        
+
         try {
           const url = await ctx.storage.getUrl(storageId as any);
           return { ...product, imageUrl: url };
         } catch {
           // Si falla, devolver el producto sin imagen
-          return { ...product, imageUrl: null };
+          return { ...product, imageUrl: undefined };
         }
       })
     );
@@ -46,7 +46,7 @@ export const listBySection = query({
           const url = await ctx.storage.getUrl(storageId as any);
           return { ...product, imageUrl: url };
         } catch {
-          return { ...product, imageUrl: null };
+          return { ...product, imageUrl: undefined };
         }
       })
     );
@@ -70,7 +70,7 @@ export const getById = query({
       const url = await ctx.storage.getUrl(storageId as any);
       return { ...product, imageUrl: url };
     } catch {
-      return { ...product, imageUrl: null };
+      return { ...product, imageUrl: undefined };
     }
   },
 });
@@ -95,7 +95,7 @@ export const getBySlug = query({
       const url = await ctx.storage.getUrl(storageId as any);
       return { ...product, imageUrl: url };
     } catch {
-      return { ...product, imageUrl: null };
+      return { ...product, imageUrl: undefined };
     }
   },
 });
