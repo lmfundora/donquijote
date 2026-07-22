@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { api } from "../../convex/_generated/api";
 import { Separator } from "#/components/ui/separator";
+import { useState } from "react";
 
 export const Route = createFileRoute("/section/$slug")({
   component: SectionPage,
@@ -101,9 +102,11 @@ function SectionHeader({ section }: { section: any }) {
 }
 
 function SectionContent({ products, categories }: any) {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   const productsByCategory =
     products?.reduce((acc: any, product: any) => {
-      const categoryId = product.categoryId || "uncategorized";
+      const categoryId = product.categoryId && product.categoryId !== "" ? product.categoryId : "uncategorized";
       if (!acc[categoryId]) {
         acc[categoryId] = [];
       }
@@ -117,82 +120,97 @@ function SectionContent({ products, categories }: any) {
     return category?.name || "Sin categoría";
   };
 
+  const filteredProducts = selectedCategory
+    ? products?.filter((product: any) => product.categoryId === selectedCategory)
+    : products;
+
   return (
     <>
       {/* Selector de Categorías Horizontal ("Bebidas") */}
       <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar justify-start">
-        {Object.keys(productsByCategory).map((categoryId) => (
-          <button
-            key={categoryId}
-            className="border border-[#5A3A24]/40 bg-white/80 px-6 py-1 text-center font-italianno text-2xl text-[#4A2E1B] hover:bg-white transition-colors shadow-sm min-w-[130px]"
-          >
-            {getCategoryName(categoryId)}
-          </button>
-        ))}
+        <button
+          onClick={() => setSelectedCategory(null)}
+          className={`border px-6 py-1 text-center font-italianno text-2xl transition-colors shadow-sm min-w-[130px] ${
+            selectedCategory === null
+              ? "bg-[#4A2E1B] text-white border-[#4A2E1B]"
+              : "border-[#5A3A24]/40 bg-white/80 text-[#4A2E1B] hover:bg-white"
+          }`}
+        >
+          Todos
+        </button>
+        {Object.keys(productsByCategory)
+          .filter((categoryId) => categoryId !== "uncategorized")
+          .map((categoryId) => (
+            <button
+              key={categoryId}
+              onClick={() => setSelectedCategory(categoryId)}
+              className={`border px-6 py-1 text-center font-italianno text-2xl transition-colors shadow-sm min-w-[130px] ${
+                selectedCategory === categoryId
+                  ? "bg-[#4A2E1B] text-white border-[#4A2E1B]"
+                  : "border-[#5A3A24]/40 bg-white/80 text-[#4A2E1B] hover:bg-white"
+              }`}
+            >
+              {getCategoryName(categoryId)}
+            </button>
+          ))}
       </div>
 
       {/* Grid de Productos */}
-      {!products || products.length === 0 ? (
+      {!filteredProducts || filteredProducts.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-stone-500 tracking-wide font-italianno text-3xl">
-            No hay productos disponibles en esta sección
+            {selectedCategory
+              ? "No hay productos en esta categoría"
+              : "No hay productos disponibles en esta sección"}
           </p>
         </div>
       ) : (
-        <div className="space-y-12">
-          {Object.entries(productsByCategory).map(
-            ([categoryId, categoryProducts]: [string, any]) => (
-              <div key={categoryId} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {categoryProducts.map((product: any) => (
-                    <Link
-                      key={product._id}
-                      to={product.slug ? `/product/${product.slug}` : "#"}
-                      className="flex bg-white border border-[#4A2E1B] overflow-hidden shadow-sm aspect-[1.5/1] hover:shadow-md transition-shadow cursor-pointer"
-                    >
-                      {/* Izquierda: Imagen (50%) */}
-                      <div className="w-1/2 relative bg-stone-100 border-r border-[#4A2E1B]/10">
-                        {product.imageUrl ? (
-                          <img
-                            src={product.imageUrl}
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-stone-300 text-xs italic">
-                            Sin imagen
-                          </div>
-                        )}
-                        <div className="absolute bottom-2 left-2 bg-black/20 backdrop-blur-[1px] px-1.5 py-0.5 rounded text-[10px] text-white font-serif tracking-widest uppercase scale-75 origin-bottom-left opacity-60">
-                          Don Quijote
-                        </div>
-                      </div>
-
-                      {/* Derecha: Detalles (50%) */}
-                      <div className="w-1/2 p-4 flex flex-col justify-between bg-[#FCF8F4]">
-                        <div className="space-y-1 text-end">
-                          <h3 className="font-italianno text-4xl md:text-5xl text-[#4A2E1B] leading-tight">
-                            {product.name}
-                          </h3>
-                          <p className="text-stone-500 text-[11px] md:text-xs leading-relaxed max-w-[95%] mx-auto font-sans font-light">
-                            {product.description}
-                          </p>
-                        </div>
-
-                        {/* Línea decorativa + Precio */}
-                        <div className="flex items-center justify-end gap-2 mt-2">
-                          <div className="flex-grow border-b border-[#4A2E1B]/20 mb-1" />
-                          <span className="font-italianno text-2xl md:text-3xl text-[#4A2E1B] font-medium pl-1">
-                            ${product.price.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.map((product: any) => (
+            <Link
+              key={product._id}
+              to={product.slug ? `/product/${product.slug}` : "#"}
+              className="flex bg-white border border-[#4A2E1B] overflow-hidden shadow-sm aspect-[1.5/1] hover:shadow-md transition-shadow cursor-pointer"
+            >
+              {/* Izquierda: Imagen (50%) */}
+              <div className="w-1/2 relative bg-stone-100 border-r border-[#4A2E1B]/10">
+                {product.imageUrl ? (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-stone-300 text-xs italic">
+                    Sin imagen
+                  </div>
+                )}
+                <div className="absolute bottom-2 left-2 bg-black/20 backdrop-blur-[1px] px-1.5 py-0.5 rounded text-[10px] text-white font-serif tracking-widest uppercase scale-75 origin-bottom-left opacity-60">
+                  Don Quijote
                 </div>
               </div>
-            ),
-          )}
+
+              {/* Derecha: Detalles (50%) */}
+              <div className="w-1/2 p-4 flex flex-col justify-between bg-[#FCF8F4]">
+                <div className="space-y-1 text-end">
+                  <h3 className="font-italianno text-4xl md:text-5xl text-[#4A2E1B] leading-tight">
+                    {product.name}
+                  </h3>
+                  <p className="text-stone-500 text-[11px] md:text-xs leading-relaxed max-w-[95%] mx-auto font-sans font-light line-clamp-4">
+                    {product.description}
+                  </p>
+                </div>
+
+                {/* Línea decorativa + Precio */}
+                <div className="flex items-center justify-end gap-2 mt-2">
+                  <div className="flex-grow border-b border-[#4A2E1B]/20 mb-1" />
+                  <span className="font-italianno text-2xl md:text-3xl text-[#4A2E1B] font-medium pl-1">
+                    ${product.price.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
     </>

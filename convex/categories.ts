@@ -45,6 +45,16 @@ export const remove = mutation({
     id: v.id("categories"),
   },
   handler: async (ctx, args) => {
+    // Verificar si hay productos con esta categoría
+    const productsWithCategory = await ctx.db
+      .query("products")
+      .filter((q) => q.eq(q.field("categoryId"), args.id))
+      .collect();
+
+    if (productsWithCategory.length > 0) {
+      throw new Error("La categoría tiene productos asignados");
+    }
+
     await ctx.db.delete(args.id);
   },
 });

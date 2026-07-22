@@ -159,11 +159,6 @@ function App() {
             <img
               src="/20260704_184003.webp"
               alt="Plato fino"
-              className="vignette-blur"
-            />
-            <img
-              src="/20260704_184003.webp"
-              alt="Plato fino"
               className="w-full h-full object-cover"
             />
           </div>
@@ -189,11 +184,6 @@ function App() {
             <img
               src="/_QJT1440.webp"
               alt="Plato fino"
-              className="vignette-blur"
-            />
-            <img
-              src="/_QJT1440.webp"
-              alt="Plato fino"
               className="w-full h-full object-cover"
             />
           </div>
@@ -212,11 +202,6 @@ function App() {
               <img
                 src="/20260621_.webp"
                 alt="Copa de vino"
-                className="vignette-blur"
-              />
-              <img
-                src="/20260621_.webp"
-                alt="Copa de vino"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -230,11 +215,6 @@ function App() {
               </p>
             </div>
             <div className="vignette-container h-60 md:h-96 lg:h-120 aspect-square self-end">
-              <img
-                src="/20260708_154439.webp"
-                alt="Cava"
-                className="vignette-blur"
-              />
               <img
                 src="/20260708_154439.webp"
                 alt="Cava"

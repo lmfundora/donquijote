@@ -353,28 +353,25 @@ body.scrolled .white-panel {
     animation: draw 30s linear infinite;
 }
 
-.vignette-container {
+/*.vignette-container {
     position: relative;
     overflow: visible;
     border-radius: 12px;
-}
+}*/
 
 /* Shadow 4 Inner Shadow — applied directly ON TOP of the image */
-.vignette-container::before {
+/*.vignette-container::before {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 4;
-    /* Shadow 4: exact values from reference */
     box-shadow:
-        /* Inner shadow 1: white highlight from top-left (Blur:43, X/Y:-31, 64% #FFFFFF) */
         inset -15px -15px 33px rgba(13, 39, 80, 0.8),
-        /* Inner shadow 2: dark depth from bottom-right (Blur:48, X/Y:26, 16% #0D2750) */
         inset 16px 16px 38px rgba(255, 255, 255, 0.9);
-}
+}*/
 
-.vignette-blur {
+/*.vignette-blur {
     position: absolute;
     width: calc(100% + 24px);
     height: calc(100% + 24px);
@@ -383,7 +380,7 @@ body.scrolled .white-panel {
     opacity: 0.35;
     z-index: -1;
     border-radius: 18px;
-}
+}*/
 
 .vignette-container img:not(.vignette-blur) {
     width: 100%;

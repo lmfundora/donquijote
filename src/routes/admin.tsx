@@ -14,9 +14,15 @@ import { api } from "../../convex/_generated/api";
 
 export const getSessionFn = createServerFn({ method: "GET" }).handler(
   async () => {
-    // Obtener el usuario autenticado desde Convex usando la utilidad server de @convex-dev/better-auth
-    const user = await fetchAuthQuery(api.auth.getCurrentUser, {});
-    return user;
+    try {
+      // Obtener el usuario autenticado desde Convex
+      const user = await fetchAuthQuery(api.auth.getCurrentUser, {});
+      return user;
+    } catch (error) {
+      // Si Convex lanza un ConvexError: Unauthenticated, retornamos null
+      console.log("Usuario no autenticado en Convex");
+      return null;
+    }
   },
 );
 
@@ -25,6 +31,8 @@ export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
     // Verificamos si existe sesión usando la consulta autenticada a Convex
     const user = await getSessionFn();
+
+    console.log(user);
 
     if (!user) {
       throw redirect({

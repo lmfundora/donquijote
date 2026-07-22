@@ -36,7 +36,11 @@ function CategoriasPage() {
         await removeCategory({ id });
         toast.success("Categoría eliminada");
       } catch (error) {
-        toast.error("Error al eliminar categoría");
+        if (error instanceof Error && error.message.includes("productos asignados")) {
+          toast.error("No se puede eliminar: tiene productos");
+        } else {
+          toast.error("Error al eliminar categoría");
+        }
       }
     }
   };

@@ -1,180 +1,57 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useConvexMutation, useConvexQuery } from "@convex-dev/react-query";
-import { api } from "../../convex/_generated/api";
-import { Plus, Edit, Trash2, X, Upload } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { optimizeImage } from "#/lib/image-utils";
 import { Button } from "#/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "#/components/ui/card";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Textarea } from "#/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "#/components/ui/select";
+import { Upload, X } from "lucide-react";
 
-export const Route = createFileRoute("/admin/secciones")({
-  component: SeccionesPage,
-});
-
-function SeccionesPage() {
-  const [showForm, setShowForm] = useState(false);
-  const [editingSection, setEditingSection] = useState<any>(null);
-
-  const sections = useConvexQuery(api.sections.list, {});
-  const createSection = useConvexMutation(api.sections.create);
-  const updateSection = useConvexMutation(api.sections.update);
-  const removeSection = useConvexMutation(api.sections.remove);
-  const generateUploadUrl = useConvexMutation(api.sections.generateUploadUrl);
-  const handleDelete = async (id: any) => {
-    if (confirm("¿Estás seguro de eliminar esta sección?")) {
-      try {
-        await removeSection({ id });
-        toast.success("Sección eliminada");
-      } catch (error) {
-        toast.error("Error al eliminar sección");
-      }
-    }
-  };
-
-  const handleEdit = (section: any) => {
-    setEditingSection(section);
-    setShowForm(true);
-  };
-
-  const handleFormClose = () => {
-    setShowForm(false);
-    setEditingSection(null);
-  };
-
-  const handleSave = async (data: any) => {
-    try {
-      if (editingSection) {
-        await updateSection({ id: editingSection._id, ...data });
-        toast.success("Sección actualizada");
-      } else {
-        await createSection(data);
-        toast.success("Sección creada");
-      }
-      handleFormClose();
-    } catch (error) {
-      toast.error("Error al guardar sección");
-    }
-  };
-
-  const sortedSections = sections?.sort(
-    (a: any, b: any) => (a.order || 0) - (b.order || 0),
-  );
-
-  return (
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Page Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold tracking-widest font-sans">
-            Secciones
-          </h1>
-          <Button onClick={() => setShowForm(true)}>
-            <Plus size={20} />
-            Nueva sección
-          </Button>
-        </div>
-
-        {/* Secciones Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedSections?.map((section: any) => (
-            <Card key={section._id}>
-              <CardHeader>
-                <CardTitle>{section.name}</CardTitle>
-                <CardDescription>{section.description}</CardDescription>
-                {section.order !== undefined && (
-                  <div className="mt-2">
-                    <span className="text-xs px-2 py-1 bg-accent rounded-full tracking-wide">
-                      Orden: {section.order}
-                    </span>
-                  </div>
-                )}
-              </CardHeader>
-              <CardFooter className="flex gap-2 justify-between">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleEdit(section)}
-                >
-                  <Edit size={16} />
-                  Editar
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(section._id)}
-                >
-                  <Trash2 size={16} />
-                  Eliminar
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-
-        {sortedSections?.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground tracking-wide">
-              No hay secciones creadas aún
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-card rounded-lg border border-border max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold tracking-widest mb-6 font-italianno">
-              {editingSection ? "Editar sección" : "Nueva sección"}
-            </h2>
-            <SectionForm
-              section={editingSection}
-              onClose={handleFormClose}
-              onSave={handleSave}
-              generateUploadUrl={generateUploadUrl}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
+interface ProductFormProps {
+  product: any;
+  sections: any[];
+  categories: any[];
+  onSave: (data: any) => Promise<void>;
+  onCancel: () => void;
+  generateUploadUrl: any;
 }
 
-function SectionForm({
-  section,
-  onClose,
+export function ProductForm({
+  product,
+  sections,
+  categories,
   onSave,
+  onCancel,
   generateUploadUrl,
-}: {
-  section: any;
-  onClose: () => void;
-  onSave: (data: any) => Promise<void>;
-  generateUploadUrl: any;
-}) {
+}: ProductFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
-    section?.imageUrl || null,
+    product?.imageUrl || null,
   );
   const [isUploading, setIsUploading] = useState(false);
+  const [allergenInput, setAllergenInput] = useState("");
+  const [allergensList, setAllergensList] = useState<string[]>(
+    product?.allergens || [],
+  );
 
   const form = useForm({
     defaultValues: {
-      name: section?.name || "",
-      description: section?.description || "",
-      order: section?.order || 0,
-      imageUrl: section?.imageUrl || "",
-      slug: section?.slug || "",
+      name: product?.name || "",
+      description: product?.description || "",
+      imageUrl: product?.imageUrl || "",
+      price: product?.price || "",
+      categoryId: product?.categoryId || "",
+      sectionId: product?.sectionId || "",
+      allergens: product?.allergens || [],
+      slug: product?.slug || "",
     },
     onSubmit: async ({ value }) => {
       let imageUrl = value.imageUrl;
@@ -218,7 +95,7 @@ function SectionForm({
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
 
-      await onSave({ ...value, imageUrl, slug });
+      await onSave({ ...value, imageUrl, allergens: allergensList, slug });
     },
   });
 
@@ -233,7 +110,7 @@ function SectionForm({
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-
+      
       // Actualizar el valor del campo en el formulario
       form.setFieldValue("imageUrl", "pending");
     }
@@ -243,6 +120,17 @@ function SectionForm({
     setImageFile(null);
     setImagePreview(null);
     form.setFieldValue("imageUrl", "");
+  };
+
+  const handleAddAllergen = () => {
+    if (allergenInput.trim()) {
+      setAllergensList([...allergensList, allergenInput.trim()]);
+      setAllergenInput("");
+    }
+  };
+
+  const handleRemoveAllergen = (index: number) => {
+    setAllergensList(allergensList.filter((_, i) => i !== index));
   };
 
   return (
@@ -299,10 +187,16 @@ function SectionForm({
         )}
       </form.Field>
 
-      <form.Field name="description">
+      <form.Field
+        name="description"
+        validators={{
+          onChange: ({ value }) =>
+            !value ? "La descripción es requerida" : undefined,
+        }}
+      >
         {(field) => (
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción (opcional)</Label>
+            <Label htmlFor="description">Descripción</Label>
             <Textarea
               id="description"
               name={field.name}
@@ -310,26 +204,32 @@ function SectionForm({
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
             />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
           </div>
         )}
       </form.Field>
 
       <form.Field
-        name="order"
+        name="price"
         validators={{
           onChange: ({ value }) =>
-            value === "" || Number(value) < 0
-              ? "El orden debe ser un número positivo"
+            !value || value === "" || Number(value) <= 0
+              ? "El precio es requerido y debe ser positivo"
               : undefined,
         }}
       >
         {(field) => (
           <div className="space-y-2">
-            <Label htmlFor="order">Orden</Label>
+            <Label htmlFor="price">Precio</Label>
             <Input
-              id="order"
+              id="price"
               name={field.name}
               type="number"
+              step="0.01"
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(Number(e.target.value))}
@@ -342,6 +242,113 @@ function SectionForm({
           </div>
         )}
       </form.Field>
+
+      <form.Field
+        name="sectionId"
+        validators={{
+          onChange: ({ value }) =>
+            !value ? "La sección es requerida" : undefined,
+        }}
+      >
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor="sectionId">Sección</Label>
+            <Select
+              value={field.state.value}
+              onValueChange={(value) => field.handleChange(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar sección" />
+              </SelectTrigger>
+              <SelectContent>
+                {sections.map((section) => (
+                  <SelectItem key={section._id} value={section._id}>
+                    {section.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="categoryId"
+        validators={{
+          onChange: ({ value }) =>
+            !value ? "La categoría es requerida" : undefined,
+        }}
+      >
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor="categoryId">Categoría</Label>
+            <Select
+              value={field.state.value}
+              onValueChange={(value) => field.handleChange(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category._id} value={category._id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <div className="space-y-2">
+        <Label>Alérgenos</Label>
+        <div className="flex gap-2">
+          <Input
+            value={allergenInput}
+            onChange={(e) => setAllergenInput(e.target.value)}
+            placeholder="Agregar alérgeno"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleAddAllergen();
+              }
+            }}
+          />
+          <Button type="button" onClick={handleAddAllergen} variant="outline">
+            Agregar
+          </Button>
+        </div>
+        {allergensList.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {allergensList.map((allergen, index) => (
+              <span
+                key={index}
+                className="text-xs px-2 py-1 bg-accent rounded-full flex items-center gap-1"
+              >
+                {allergen}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveAllergen(index)}
+                  className="hover:text-destructive"
+                >
+                  <X size={12} />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       <form.Field
         name="imageUrl"
@@ -414,7 +421,7 @@ function SectionForm({
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
+              onClick={onCancel}
               disabled={isUploading}
               className="flex-1"
             >
@@ -429,7 +436,7 @@ function SectionForm({
                 ? "Subiendo imagen..."
                 : isSubmitting
                   ? "Guardando..."
-                  : section
+                  : product
                     ? "Actualizar"
                     : "Crear"}
             </Button>

@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
 
 export const Route = createFileRoute("/home")({
@@ -15,12 +17,7 @@ export const Route = createFileRoute("/home")({
     ],
   }),
   loader: async ({ context }) => {
-    // Usar el cliente Convex directamente para cargar datos en el servidor
-    const convexClient = context.convexQueryClient.convexClient;
-    
-    const sections = await convexClient.query(api.sections.list, {});
-
-    return { sections };
+    await context.queryClient.ensureQueryData(convexQuery(api.sections.list, {}));
   },
 });
 
@@ -41,7 +38,7 @@ const getFallbackImage = (name: string) => {
 };
 
 function HomeComponent() {
-  const { sections } = Route.useLoaderData();
+  const { data: sections } = useSuspenseQuery(convexQuery(api.sections.list, {}));
   const navigate = useNavigate();
 
   return (
