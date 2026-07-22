@@ -1,9 +1,8 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { authClient } from "#/lib/auth-client";
 import { useConvexMutation, useConvexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
-import { Plus, Edit, Trash2, X } from "lucide-react";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { Button } from "#/components/ui/button";
@@ -23,8 +22,6 @@ export const Route = createFileRoute("/admin/categorias")({
 });
 
 function CategoriasPage() {
-  const { data: session, isPending } = authClient.useSession();
-  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
 
@@ -32,19 +29,6 @@ function CategoriasPage() {
   const createCategory = useConvexMutation(api.categories.create);
   const updateCategory = useConvexMutation(api.categories.update);
   const removeCategory = useConvexMutation(api.categories.remove);
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-800 dark:border-t-neutral-100" />
-      </div>
-    );
-  }
-
-  if (!session?.user) {
-    router.navigate({ to: "/login" });
-    return null;
-  }
 
   const handleDelete = async (id: any) => {
     if (confirm("¿Estás seguro de eliminar esta categoría?")) {
@@ -82,7 +66,9 @@ function CategoriasPage() {
     }
   };
 
-  const sortedCategories = categories?.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+  const sortedCategories = categories?.sort(
+    (a: any, b: any) => (a.order || 0) - (b.order || 0),
+  );
 
   return (
     <div className="p-6">
@@ -175,8 +161,6 @@ function CategoryForm({
   const form = useForm({
     defaultValues: {
       name: category?.name || "",
-      description: category?.description || "",
-      order: category?.order || 0,
     },
     onSubmit: async ({ value }) => {
       await onSave(value);
@@ -218,50 +202,6 @@ function CategoryForm({
         )}
       </form.Field>
 
-      <form.Field name="description">
-        {(field) => (
-          <div className="space-y-2">
-            <Label htmlFor="description">Descripción (opcional)</Label>
-            <Textarea
-              id="description"
-              name={field.name}
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-            />
-          </div>
-        )}
-      </form.Field>
-
-      <form.Field
-        name="order"
-        validators={{
-          onChange: ({ value }) =>
-            value === "" || Number(value) < 0
-              ? "El orden debe ser un número positivo"
-              : undefined,
-        }}
-      >
-        {(field) => (
-          <div className="space-y-2">
-            <Label htmlFor="order">Orden</Label>
-            <Input
-              id="order"
-              name={field.name}
-              type="number"
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(Number(e.target.value))}
-            />
-            {field.state.meta.errors.length > 0 && (
-              <p className="text-sm text-destructive">
-                {field.state.meta.errors[0]}
-              </p>
-            )}
-          </div>
-        )}
-      </form.Field>
-
       <form.Subscribe
         selector={(state) => [state.canSubmit, state.isSubmitting]}
       >
@@ -281,7 +221,11 @@ function CategoryForm({
               disabled={!canSubmit || isSubmitting}
               className="flex-1"
             >
-              {isSubmitting ? "Guardando..." : category ? "Actualizar" : "Crear"}
+              {isSubmitting
+                ? "Guardando..."
+                : category
+                  ? "Actualizar"
+                  : "Crear"}
             </Button>
           </div>
         )}
