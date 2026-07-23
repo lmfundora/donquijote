@@ -205,6 +205,7 @@ function SectionContent({
               <Link
                 key={product._id}
                 to="/carta/$sectionSlug/$productSlug"
+                preload={false}
                 params={{
                   sectionSlug,
                   productSlug: product.slug,
