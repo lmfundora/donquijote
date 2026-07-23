@@ -12,15 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminSeccionesRouteImport } from './routes/admin.secciones'
-import { Route as ProductSlugRouteImport } from './routes/product.$slug'
-import { Route as SectionSlugRouteImport } from './routes/section.$slug'
+import { Route as CartaIndexRouteImport } from './routes/carta.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as CartaSectionSlugIndexRouteImport } from './routes/carta.$sectionSlug.index'
+import { Route as CartaSectionSlugProductSlugIndexRouteImport } from './routes/carta.$sectionSlug.$productSlug.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,11 +35,6 @@ const AboutRoute = AboutRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -67,14 +62,9 @@ const AdminSeccionesRoute = AdminSeccionesRouteImport.update({
   path: '/secciones',
   getParentRoute: () => AdminRoute,
 } as any)
-const ProductSlugRoute = ProductSlugRouteImport.update({
-  id: '/product/$slug',
-  path: '/product/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SectionSlugRoute = SectionSlugRouteImport.update({
-  id: '/section/$slug',
-  path: '/section/$slug',
+const CartaIndexRoute = CartaIndexRouteImport.update({
+  id: '/carta/',
+  path: '/carta/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -82,48 +72,59 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CartaSectionSlugIndexRoute = CartaSectionSlugIndexRouteImport.update({
+  id: '/carta/$sectionSlug/',
+  path: '/carta/$sectionSlug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartaSectionSlugProductSlugIndexRoute =
+  CartaSectionSlugProductSlugIndexRouteImport.update({
+    id: '/carta/$sectionSlug/$productSlug/',
+    path: '/carta/$sectionSlug/$productSlug/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/secciones': typeof AdminSeccionesRoute
-  '/product/$slug': typeof ProductSlugRoute
-  '/section/$slug': typeof SectionSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/carta/': typeof CartaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/carta/$sectionSlug/': typeof CartaSectionSlugIndexRoute
+  '/carta/$sectionSlug/$productSlug/': typeof CartaSectionSlugProductSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/secciones': typeof AdminSeccionesRoute
-  '/product/$slug': typeof ProductSlugRoute
-  '/section/$slug': typeof SectionSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/carta': typeof CartaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/carta/$sectionSlug': typeof CartaSectionSlugIndexRoute
+  '/carta/$sectionSlug/$productSlug': typeof CartaSectionSlugProductSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/secciones': typeof AdminSeccionesRoute
-  '/product/$slug': typeof ProductSlugRoute
-  '/section/$slug': typeof SectionSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/carta/': typeof CartaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/carta/$sectionSlug/': typeof CartaSectionSlugIndexRoute
+  '/carta/$sectionSlug/$productSlug/': typeof CartaSectionSlugProductSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,54 +132,54 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
-    | '/home'
     | '/login'
     | '/register'
     | '/admin/categorias'
     | '/admin/secciones'
-    | '/product/$slug'
-    | '/section/$slug'
     | '/admin/'
+    | '/carta/'
     | '/api/auth/$'
+    | '/carta/$sectionSlug/'
+    | '/carta/$sectionSlug/$productSlug/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/home'
     | '/login'
     | '/register'
     | '/admin/categorias'
     | '/admin/secciones'
-    | '/product/$slug'
-    | '/section/$slug'
     | '/admin'
+    | '/carta'
     | '/api/auth/$'
+    | '/carta/$sectionSlug'
+    | '/carta/$sectionSlug/$productSlug'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/admin'
-    | '/home'
     | '/login'
     | '/register'
     | '/admin/categorias'
     | '/admin/secciones'
-    | '/product/$slug'
-    | '/section/$slug'
     | '/admin/'
+    | '/carta/'
     | '/api/auth/$'
+    | '/carta/$sectionSlug/'
+    | '/carta/$sectionSlug/$productSlug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
-  HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
-  ProductSlugRoute: typeof ProductSlugRoute
-  SectionSlugRoute: typeof SectionSlugRoute
+  CartaIndexRoute: typeof CartaIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  CartaSectionSlugIndexRoute: typeof CartaSectionSlugIndexRoute
+  CartaSectionSlugProductSlugIndexRoute: typeof CartaSectionSlugProductSlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -202,13 +203,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -246,18 +240,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSeccionesRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/product/$slug': {
-      id: '/product/$slug'
-      path: '/product/$slug'
-      fullPath: '/product/$slug'
-      preLoaderRoute: typeof ProductSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/section/$slug': {
-      id: '/section/$slug'
-      path: '/section/$slug'
-      fullPath: '/section/$slug'
-      preLoaderRoute: typeof SectionSlugRouteImport
+    '/carta/': {
+      id: '/carta/'
+      path: '/carta'
+      fullPath: '/carta/'
+      preLoaderRoute: typeof CartaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -265,6 +252,20 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carta/$sectionSlug/': {
+      id: '/carta/$sectionSlug/'
+      path: '/carta/$sectionSlug'
+      fullPath: '/carta/$sectionSlug/'
+      preLoaderRoute: typeof CartaSectionSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carta/$sectionSlug/$productSlug/': {
+      id: '/carta/$sectionSlug/$productSlug/'
+      path: '/carta/$sectionSlug/$productSlug'
+      fullPath: '/carta/$sectionSlug/$productSlug/'
+      preLoaderRoute: typeof CartaSectionSlugProductSlugIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -288,12 +289,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
-  HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
-  ProductSlugRoute: ProductSlugRoute,
-  SectionSlugRoute: SectionSlugRoute,
+  CartaIndexRoute: CartaIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  CartaSectionSlugIndexRoute: CartaSectionSlugIndexRoute,
+  CartaSectionSlugProductSlugIndexRoute: CartaSectionSlugProductSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

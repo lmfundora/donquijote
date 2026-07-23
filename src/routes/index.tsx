@@ -32,8 +32,8 @@ function App() {
       .map((section: any) => ({
         title: section.name,
         to: section.slug
-          ? `/home/${section.slug}`
-          : `/home/${section.name
+          ? `/carta/${section.slug}`
+          : `/carta/${section.name
               .toLowerCase()
               .normalize("NFD")
               .replace(/[\u0300-\u036f]/g, "")}`,
@@ -52,12 +52,12 @@ function App() {
         <h1 className="hero-title absolute z-35 font-italianno">Don Quijote</h1>
 
         {/* CTA Button */}
-        <Link to="/home" className="hero-button absolute z-35">
+        <Link to="/carta" className="hero-button absolute z-35">
           <Button
             variant={"outline"}
             className="font-sans tracking-widest text-white hover:bg-accent transition-colors duration-300 gap-2"
           >
-            Ver secciones
+            Ver carta
             <ArrowRight className="w-4 h-4" />
           </Button>
         </Link>
