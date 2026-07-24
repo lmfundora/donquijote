@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
+import Footer from "#/components/Footer";
 
 export const Route = createFileRoute("/")({ component: App });
 
@@ -52,7 +53,7 @@ function App() {
         <h1 className="hero-title absolute z-35 font-italianno">Don Quijote</h1>
 
         {/* CTA Button */}
-        <Link to="/carta" className="hero-button absolute z-35">
+        <a href="/carta" className="hero-button absolute z-35">
           <Button
             variant={"outline"}
             className="font-sans tracking-widest text-white hover:bg-accent transition-colors duration-300 gap-2"
@@ -60,7 +61,7 @@ function App() {
             Ver carta
             <ArrowRight className="w-4 h-4" />
           </Button>
-        </Link>
+        </a>
       </div>
 
       {/* Vignette Overlay - Fixed */}
@@ -121,7 +122,7 @@ function App() {
       </nav>
 
       {/* White Left Panel - Scroll-driven animation */}
-      <div className="white-panel z-30 w-full bg-background h-screen absolute top-0 left-0">
+      <div className="white-panel z-30 w-full bg-white h-screen absolute top-0 left-0">
         <div className="w-full h-full relative">
           <p className="absolute top-[35%]  left-[25%]  md:left-[22%] lg:left-[32%] w-52 md:w-64 lg:w-60 text-center font-sans tracking-widest text-sm/6 md:text-lg/10 lg:text-base/14">
             Donde el lujo, cultura y tradición se filtran en cada
@@ -155,7 +156,7 @@ function App() {
       {/* Content below hero - for scrolling */}
       <div className="relative pt-16 md:pt-40 lg:pt-50 z-10">
         <div className="flex gap-4 md:gap-12 lg:gap-15">
-          <div className="vignette-container h-52 md:h-96 lg:h-120 aspect-3/5 ms-6 md:ms-16 lg:ms-50">
+          <div className="vignette-container h-62 md:h-96 lg:h-120 aspect-3/5 ms-6 md:ms-16 lg:ms-50">
             <img
               src="/20260704_184003.webp"
               alt="Plato fino"
@@ -166,7 +167,7 @@ function App() {
             <p className="font-sans tracking-widest text-base md:text-xl lg:text-xl">
               Exelencia
             </p>
-            <p className="font-sans tracking-widest mt-4 md:mt-12 lg:mt-20 w-24 md:w-32 lg:w-30 text-xs/5 md:text-sm/7 lg:text-sm/14">
+            <p className="font-sans tracking-widest mt-4 md:mt-12 lg:mt-20 w-24 md:w-32 lg:w-30 text-xs/8 md:text-sm/9 lg:text-sm/14">
               Platos concebidos por maestros
             </p>
           </div>
@@ -209,7 +210,7 @@ function App() {
 
           <div className="flex flex-col justify-end mt-10 md:mt-0">
             <div className=" w-full flex justify-end">
-              <p className="font-sans tracking-widest mt-4 md:mt-10 lg:mt-11 mb-10 md:mb-24 lg:mb-50 w-40 md:w-52 lg:w-50 text-end text-xs/5 md:text-sm/7 lg:text-sm/14">
+              <p className="font-sans tracking-widest mt-4 md:mt-10 lg:mt-11 mb-10 md:mb-24 lg:mb-50 w-40 md:w-52 lg:w-50 text-end text-s/8 md:text-sm/9 lg:text-sm/14">
                 El maridaje perfecto para coronar una velada verdaderamente
                 inolvidable
               </p>
@@ -226,103 +227,7 @@ function App() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-background text-text-dark px-6 md:px-12 lg:px-25">
-        {/* Pink line at top */}
-        <Separator />
-
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-10 py-10 md:py-12 lg:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 lg:gap-12">
-            {/* Social Media */}
-            <div>
-              <h3 className="font-sans tracking-widest text-lg mb-4">
-                @selmacopenhagen
-              </h3>
-              <div className="flex gap-3">
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs">
-                  M
-                </div>
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs">
-                  😊
-                </div>
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs">
-                  SG
-                </div>
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs">
-                  OAD
-                </div>
-              </div>
-            </div>
-
-            {/* Location */}
-            <div>
-              <h3 className="font-sans tracking-widest text-lg mb-4">
-                Santa Clara
-              </h3>
-              <p className="font-sans tracking-wider text-sm">
-                Carretera de Sagua #132
-              </p>
-              <p className="font-sans tracking-wider text-sm">
-                Villa Clara, Cuba
-              </p>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h3 className="font-sans tracking-widest text-lg mb-4">
-                Contact
-              </h3>
-              <p className="font-sans tracking-wider text-sm">+45 40277203</p>
-              <p className="font-sans tracking-wider text-sm">
-                hello@selmacopenhagen.dk
-              </p>
-            </div>
-
-            {/* Opening Hours */}
-            <div>
-              <h3 className="font-sans tracking-widest text-lg mb-4">
-                Horarios
-              </h3>
-              <div className="mb-4">
-                <p className="font-sans tracking-wider text-sm font-semibold">
-                  Cena
-                </p>
-                <p className="font-sans tracking-wider text-sm">
-                  Todos los días
-                </p>
-                <p className="font-sans tracking-wider text-sm">18:30-23:00</p>
-              </div>
-              <div>
-                <p className="font-sans tracking-wider text-sm font-semibold">
-                  Almuerzo
-                </p>
-                <p className="font-sans tracking-wider text-sm">
-                  Todos los días
-                </p>
-                <p className="font-sans tracking-wider text-sm">11:30-16:00</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-8 mt-8 md:mt-10 lg:mt-12 pt-6 md:pt-8 lg:pt-8 border-t border-gray-300">
-            <div>
-              <h3 className="font-sans tracking-widest text-lg">Jobs</h3>
-              <p className="font-sans tracking-wider text-sm mt-2 cursor-pointer hover:opacity-70">
-                Apply for jobs
-              </p>
-            </div>
-            <div>
-              <h3 className="font-sans tracking-widest text-lg">Press</h3>
-              <p className="font-sans tracking-wider text-sm mt-2 cursor-pointer hover:opacity-70">
-                Go to press page
-              </p>
-            </div>
-            <div>
-              <h3 className="font-sans tracking-widest text-lg">Giftcard</h3>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

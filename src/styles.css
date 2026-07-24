@@ -388,4 +388,5 @@ body.scrolled .white-panel {
     object-fit: cover;
     position: relative;
     z-index: 1;
+    box-shadow: 16px 16px 38px rgba(250, 109, 2, 0.2);
 }

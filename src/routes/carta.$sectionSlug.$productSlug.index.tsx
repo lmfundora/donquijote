@@ -24,53 +24,18 @@ export const Route = createFileRoute("/carta/$sectionSlug/$productSlug/")({
     ],
   }),
   loader: async ({ params, context }) => {
-    // Cargar producto primero (sin procesar imagen en SSR)
-    await context.queryClient.ensureQueryData(
-      convexQuery(api.products.getBySlug, { slug: params.productSlug }),
-    );
-
     // Obtener el producto para cargar datos dependientes
     const product = await context.queryClient.fetchQuery(
       convexQuery(api.products.getBySlug, { slug: params.productSlug }),
     );
 
-    if (product) {
-      // Cargar sección y categoría usando los IDs del producto
-      await Promise.all([
-        context.queryClient.ensureQueryData(
-          convexQuery(api.sections.getById, {
-            id: product.sectionId,
-          }),
-        ),
-        product.categoryId
-          ? context.queryClient.ensureQueryData(
-              convexQuery(api.categories.getById, {
-                id: product.categoryId,
-              }),
-            )
-          : Promise.resolve(),
-      ]);
-    }
+    return { product };
   },
 });
 
 function ProductPage() {
-  const { productSlug } = Route.useParams();
-  const { data: product } = useSuspenseQuery(
-    convexQuery(api.products.getBySlug, { slug: productSlug }),
-  );
-
-  const { data: section } = useQuery(
-    convexQuery(api.sections.getById, {
-      id: product?.sectionId as any,
-    }),
-  );
-
-  const { data: category } = useQuery(
-    convexQuery(api.categories.getById, {
-      id: product?.categoryId as any,
-    }),
-  );
+  const { sectionSlug } = Route.useParams();
+  const { product } = Route.useLoaderData();
 
   if (!product) {
     return (
@@ -100,19 +65,12 @@ function ProductPage() {
   return (
     <main className="min-h-screen bg-[#FAF4ED] text-[#332211] relative overflow-x-hidden">
       {/* Botón flotante para regresar a la sección (Común para ambas vistas) */}
-      <Link
-        to={
-          section
-            ? {
-                to: "/carta/$sectionSlug",
-                params: { sectionSlug: section.slug || "" },
-              }
-            : "/"
-        }
+      <a
+        href={`/carta/${sectionSlug}`}
         className="absolute top-4 left-4 z-30 inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-colors"
       >
         <ArrowLeft size={20} />
-      </Link>
+      </a>
 
       {/* ========================================================================= */}
       {/* 1. ESTRUCTURA DESKTOP (lg:flex - Oculta en móviles) */}

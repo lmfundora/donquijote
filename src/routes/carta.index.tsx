@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 export const Route = createFileRoute("/carta/")({
   component: CartaComponent,
@@ -16,8 +17,17 @@ export const Route = createFileRoute("/carta/")({
       },
     ],
   }),
+  pendingComponent: () => (
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <p className="text-muted-foreground animate-pulse">Cargando sección...</p>
+    </div>
+  ),
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(convexQuery(api.sections.list, {}));
+    const sections = await context.queryClient.ensureQueryData(
+      convexQuery(api.sections.list, {}),
+    );
+
+    return { sections };
   },
 });
 
@@ -38,7 +48,10 @@ const getFallbackImage = (name: string) => {
 };
 
 function CartaComponent() {
-  const { data: sections } = useSuspenseQuery(convexQuery(api.sections.list, {}));
+  const { sections } = Route.useLoaderData();
+  // const { data: sections } = useSuspenseQuery(
+  //   convexQuery(api.sections.list, {}),
+  // );
   const navigate = useNavigate();
 
   return (
@@ -52,17 +65,13 @@ function CartaComponent() {
 
         {/* Sections Grid / Stack */}
         <div className="flex flex-col gap-6 md:gap-8 w-full">
-          {sections.map((section: any) => {
-            const slug = section.slug || getSlugFromName(section.name);
-            const bgImage =
-              section.imageUrl || getFallbackImage(section.name);
+          {sections.map((section) => {
+            const bgImage = section.imageUrl || getFallbackImage(section.name);
 
             return (
-              <button
+              <a
                 key={section._id}
-                onClick={() => {
-                  navigate({ to: "/carta/$sectionSlug", params: { sectionSlug: slug as string } });
-                }}
+                href={`/carta/${section.slug}`}
                 className="group self-end-safe relative block w-full md:w-3/4 aspect-[3.2/1] md:aspect-[4.8/1] min-h-[110px] md:min-h-[140px] overflow-hidden rounded-[2px] shadow-sm hover:shadow-md transition-all duration-500 cursor-pointer border-0 p-0 bg-transparent"
               >
                 <img
@@ -91,7 +100,7 @@ function CartaComponent() {
                     {section.description}
                   </p>
                 </div>
-              </button>
+              </a>
             );
           })}
         </div>

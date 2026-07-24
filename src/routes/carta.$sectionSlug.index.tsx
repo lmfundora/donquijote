@@ -19,25 +19,39 @@ export const Route = createFileRoute("/carta/$sectionSlug/")({
       },
     ],
   }),
+
+  pendingComponent: () => (
+    <div className="flex items-center justify-center p-8">
+      <p className="text-muted-foreground animate-pulse">
+        Cargando secciones...
+      </p>
+    </div>
+  ),
   loader: async ({ params, context }) => {
-    // Cargar sección primero
-    const section = await context.queryClient.fetchQuery(
+    // 1. Iniciamos la búsqueda de la sección
+    const sectionPromise = context.queryClient.ensureQueryData(
       convexQuery(api.sections.getBySlug, { slug: params.sectionSlug }),
     );
 
-    if (section) {
-      // Cargar productos usando el sectionId
-      await context.queryClient.ensureQueryData(
+    // 2. Iniciamos categorías en PARALELO (sin esperar por la sección)
+    const categoriesPromise = context.queryClient.ensureQueryData(
+      convexQuery(api.categories.list, {}),
+    );
+
+    // 3. Esperamos la sección para pedir productos
+    const section = await sectionPromise;
+
+    if (section?._id) {
+      // No usamos 'await' aquí si no es crítico para el HTML inicial,
+      // dejamos que la query se instancie para que la página navegue DE INMEDIATO
+      context.queryClient.ensureQueryData(
         convexQuery(api.products.listBySection, {
           sectionId: section._id as any,
         }),
       );
     }
 
-    // Cargar categorías en SSR (no dependen de la sección)
-    await context.queryClient.ensureQueryData(
-      convexQuery(api.categories.list, {}),
-    );
+    await categoriesPromise;
   },
 });
 
