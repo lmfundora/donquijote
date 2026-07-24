@@ -47,12 +47,12 @@ function ProductPage() {
           <p className="text-stone-500 tracking-wide mb-6">
             El producto que buscas no existe.
           </p>
-          <Link
-            to="/"
+          <a
+            href="/"
             className="inline-flex items-center gap-2 text-[#4A2E1B] underline underline-offset-4"
           >
             <ArrowLeft size={16} /> Volver al inicio
-          </Link>
+          </a>
         </div>
       </main>
     );

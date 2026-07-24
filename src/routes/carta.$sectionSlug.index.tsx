@@ -28,46 +28,32 @@ export const Route = createFileRoute("/carta/$sectionSlug/")({
     </div>
   ),
   loader: async ({ params, context }) => {
-    // 1. Iniciamos la búsqueda de la sección
-    const sectionPromise = context.queryClient.ensureQueryData(
-      convexQuery(api.sections.getBySlug, { slug: params.sectionSlug }),
-    );
-
-    // 2. Iniciamos categorías en PARALELO (sin esperar por la sección)
-    const categoriesPromise = context.queryClient.ensureQueryData(
-      convexQuery(api.categories.list, {}),
-    );
-
-    // 3. Esperamos la sección para pedir productos
-    const section = await sectionPromise;
-
-    if (section?._id) {
-      // No usamos 'await' aquí si no es crítico para el HTML inicial,
-      // dejamos que la query se instancie para que la página navegue DE INMEDIATO
+    // 1. Disparamos las dos peticiones independientes simultáneamente
+    const [section, categories] = await Promise.all([
       context.queryClient.ensureQueryData(
+        convexQuery(api.sections.getBySlug, { slug: params.sectionSlug }),
+      ),
+      context.queryClient.ensureQueryData(convexQuery(api.categories.list, {})),
+    ]);
+
+    let products;
+    // 2. Como la query de productos depende de 'section._id',
+    // la instanciamos justo al terminar Promise.all (sin 'await' para no ralentizar la ruta)
+    if (section?._id) {
+      products = await context.queryClient.ensureQueryData(
         convexQuery(api.products.listBySection, {
           sectionId: section._id as any,
         }),
       );
     }
 
-    await categoriesPromise;
+    return { section, categories, products };
   },
 });
 
 function SectionPage() {
   const { sectionSlug } = Route.useParams();
-  const { data: section } = useSuspenseQuery(
-    convexQuery(api.sections.getBySlug, { slug: sectionSlug }),
-  );
-
-  const { data: products } = useQuery(
-    convexQuery(api.products.listBySection, {
-      sectionId: section?._id as any,
-    }),
-  );
-
-  const { data: categories } = useQuery(convexQuery(api.categories.list, {}));
+  const { section, categories, products } = Route.useLoaderData();
 
   return (
     <main className="min-h-screen bg-[#FAF4ED] text-[#332211]">
@@ -132,7 +118,6 @@ function SectionHeader({ section }: { section: Doc<"sections"> }) {
 function SectionContent({
   products,
   categories,
-  section,
   sectionSlug,
 }: {
   products: Doc<"products">[];
@@ -216,14 +201,9 @@ function SectionContent({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product: Doc<"products">) => {
             return product.slug ? (
-              <Link
+              <a
                 key={product._id}
-                to="/carta/$sectionSlug/$productSlug"
-                preload={false}
-                params={{
-                  sectionSlug,
-                  productSlug: product.slug,
-                }}
+                href={`/carta/${sectionSlug}/${product.slug}`}
                 className="flex bg-white border border-[#4A2E1B] overflow-hidden shadow-sm aspect-[1.5/1] hover:shadow-md transition-shadow cursor-pointer"
               >
                 {/* Izquierda: Imagen (50%) */}
@@ -263,7 +243,7 @@ function SectionContent({
                     </span>
                   </div>
                 </div>
-              </Link>
+              </a>
             ) : null;
           })}
         </div>

@@ -210,7 +210,7 @@ function App() {
 
           <div className="flex flex-col justify-end mt-10 md:mt-0">
             <div className=" w-full flex justify-end">
-              <p className="font-sans tracking-widest mt-4 md:mt-10 lg:mt-11 mb-10 md:mb-24 lg:mb-50 w-40 md:w-52 lg:w-50 text-end text-s/8 md:text-sm/9 lg:text-sm/14">
+              <p className="font-sans tracking-widest mt-4 md:mt-10 lg:mt-11 mb-10 md:mb-24 lg:mb-50 w-40 md:w-52 lg:w-50 text-end text-xs/8 md:text-sm/9 lg:text-sm/14">
                 El maridaje perfecto para coronar una velada verdaderamente
                 inolvidable
               </p>
