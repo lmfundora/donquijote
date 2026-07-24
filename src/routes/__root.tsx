@@ -42,13 +42,11 @@ export const Route = createRootRouteWithContext<{
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "icon", type: "ico", href: "/favicon.ico" },
     ],
   }),
   beforeLoad: async (ctx) => {
-    // ⚠️ Solo ejecutamos la Server Function durante el renderizado en Servidor (SSR)
-    const isServer = typeof window === "undefined";
-    const token = isServer ? await getAuth() : undefined;
+    const token = await getAuth();
 
     if (token) {
       ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);

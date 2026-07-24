@@ -1,5 +1,4 @@
 import SvgDraw from "#/components/SvgDraw";
-import { Separator } from "#/components/ui/separator";
 import { Button } from "#/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { useConvexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
 import Footer from "#/components/Footer";
+import Seo from "#/components/Seo";
 
 export const Route = createFileRoute("/")({ component: App });
 
@@ -41,6 +41,7 @@ function App() {
       })) || [];
   return (
     <main className="relative w-full overflow-x-hidden">
+      <Seo />
       {/* Background Image - Fixed */}
       <div className="w-screen h-screen overflow-hidden relative">
         <img
